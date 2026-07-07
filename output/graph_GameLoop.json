@@ -1,0 +1,112 @@
+{
+  "className": "GameLoop",
+  "sourceFile": "GameLoop.java",
+  "fields": [
+    {
+      "name": "gameState",
+      "type": "GameState",
+      "isVolatile": false,
+      "isFinal": true,
+      "isStatic": false,
+      "category": "OBJECT_REFERENCE"
+    },
+    {
+      "name": "gameService",
+      "type": "GameService",
+      "isVolatile": false,
+      "isFinal": true,
+      "isStatic": false,
+      "category": "OBJECT_REFERENCE"
+    },
+    {
+      "name": "gson",
+      "type": "Gson",
+      "isVolatile": false,
+      "isFinal": false,
+      "isStatic": false,
+      "category": "OBJECT_REFERENCE"
+    }
+  ],
+  "methods": [
+    {
+      "name": "tick",
+      "hasScheduledAnnotation": true,
+      "accesses": [
+        {
+          "field": "gameState",
+          "type": "READ",
+          "guardedBySynchronized": false
+        },
+        {
+          "field": "gameState",
+          "type": "READ",
+          "guardedBySynchronized": false
+        },
+        {
+          "field": "gameState",
+          "type": "READ",
+          "guardedBySynchronized": false
+        },
+        {
+          "field": "gameService",
+          "type": "READ",
+          "guardedBySynchronized": false
+        },
+        {
+          "field": "gson",
+          "type": "READ",
+          "guardedBySynchronized": false
+        },
+        {
+          "field": "gameState",
+          "type": "READ",
+          "guardedBySynchronized": false
+        },
+        {
+          "field": "gameState",
+          "type": "READ",
+          "guardedBySynchronized": false
+        }
+      ],
+      "riskNotes": []
+    },
+    {
+      "name": "buildStateJson",
+      "hasScheduledAnnotation": false,
+      "accesses": [
+        {
+          "field": "gameState",
+          "type": "READ",
+          "guardedBySynchronized": false
+        },
+        {
+          "field": "gameState",
+          "type": "READ",
+          "guardedBySynchronized": false
+        },
+        {
+          "field": "gameState",
+          "type": "READ",
+          "guardedBySynchronized": false
+        },
+        {
+          "field": "gameState",
+          "type": "READ",
+          "guardedBySynchronized": false
+        },
+        {
+          "field": "gameState",
+          "type": "READ",
+          "guardedBySynchronized": false
+        },
+        {
+          "field": "gson",
+          "type": "READ",
+          "guardedBySynchronized": false
+        }
+      ],
+      "riskNotes": []
+    }
+  ],
+  "crossMethodRisks": []
+}

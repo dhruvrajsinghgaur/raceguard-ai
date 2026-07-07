@@ -1,0 +1,2061 @@
+{
+  "classes": [
+    {
+      "className": "MmoServerApplication",
+      "sourceFile": "MmoServerApplication.java",
+      "fields": [],
+      "methods": [
+        {
+          "name": "main",
+          "hasScheduledAnnotation": false,
+          "accesses": [],
+          "riskNotes": []
+        },
+        {
+          "name": "passwordEncoder",
+          "hasScheduledAnnotation": false,
+          "accesses": [],
+          "riskNotes": []
+        }
+      ]
+    },
+    {
+      "className": "PlayerController",
+      "sourceFile": "PlayerController.java",
+      "fields": [
+        {
+          "name": "playerRepository",
+          "type": "PlayerRepository",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE",
+          "referencesClass": "PlayerRepository"
+        },
+        {
+          "name": "passwordEncoder",
+          "type": "BCryptPasswordEncoder",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE"
+        },
+        {
+          "name": "jwtServices",
+          "type": "JWTServices",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE",
+          "referencesClass": "JWTServices"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getPlayers",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "playerRepository",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "createPlayer",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "playerRepository",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "passwordEncoder",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "playerRepository",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "getPlayer",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "playerRepository",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "deletePlayer",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "playerRepository",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "updatePlayer",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "playerRepository",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "playerRepository",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "login",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "playerRepository",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "passwordEncoder",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "jwtServices",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "secureTest",
+          "hasScheduledAnnotation": false,
+          "accesses": [],
+          "riskNotes": []
+        },
+        {
+          "name": "getGameState",
+          "hasScheduledAnnotation": false,
+          "accesses": [],
+          "riskNotes": []
+        }
+      ]
+    },
+    {
+      "className": "Players",
+      "sourceFile": "Players.java",
+      "fields": [
+        {
+          "name": "id",
+          "type": "long",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "username",
+          "type": "String",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE"
+        },
+        {
+          "name": "password",
+          "type": "String",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE"
+        },
+        {
+          "name": "hp",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "level",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "gold",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "xp",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "className": "PlayerRepository",
+      "sourceFile": "PlayerRepository.java",
+      "fields": [],
+      "methods": [
+        {
+          "name": "findByUsername",
+          "hasScheduledAnnotation": false,
+          "accesses": [],
+          "riskNotes": []
+        }
+      ]
+    },
+    {
+      "className": "SecurityConfig",
+      "sourceFile": "SecurityConfig.java",
+      "fields": [
+        {
+          "name": "jwtFilter",
+          "type": "JwtFilter",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE",
+          "referencesClass": "JwtFilter"
+        }
+      ],
+      "methods": [
+        {
+          "name": "filterChain",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "jwtFilter",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        }
+      ]
+    },
+    {
+      "className": "JWTServices",
+      "sourceFile": "JWTServices.java",
+      "fields": [
+        {
+          "name": "secret",
+          "type": "String",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE"
+        },
+        {
+          "name": "EXPIRY",
+          "type": "long",
+          "isVolatile": false,
+          "isFinal": true,
+          "isStatic": true,
+          "category": "PRIMITIVE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getKey",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "secret",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "generateToken",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "EXPIRY",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "extractUsername",
+          "hasScheduledAnnotation": false,
+          "accesses": [],
+          "riskNotes": []
+        },
+        {
+          "name": "isTokenValid",
+          "hasScheduledAnnotation": false,
+          "accesses": [],
+          "riskNotes": []
+        }
+      ]
+    },
+    {
+      "className": "JwtFilter",
+      "sourceFile": "JwtFilter.java",
+      "fields": [
+        {
+          "name": "jwtService",
+          "type": "JWTServices",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE",
+          "referencesClass": "JWTServices"
+        }
+      ],
+      "methods": [
+        {
+          "name": "doFilterInternal",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "jwtService",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "jwtService",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        }
+      ]
+    },
+    {
+      "className": "Items",
+      "sourceFile": "Items.java",
+      "fields": [
+        {
+          "name": "name",
+          "type": "String",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE"
+        },
+        {
+          "name": "id",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "type",
+          "type": "String",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE"
+        },
+        {
+          "name": "value",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "description",
+          "type": "String",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getInfo",
+          "hasScheduledAnnotation": false,
+          "accesses": [],
+          "riskNotes": []
+        }
+      ]
+    },
+    {
+      "className": "Weapon",
+      "sourceFile": "Weapon.java",
+      "fields": [
+        {
+          "name": "attackPower",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "armorDamage",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "range",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "durability",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "worldX",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "worldY",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getInfo",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "attackPower",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "armorDamage",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "range",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "durability",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        }
+      ]
+    },
+    {
+      "className": "GamePlayer",
+      "sourceFile": "GamePlayer.java",
+      "fields": [
+        {
+          "name": "id",
+          "type": "long",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "username",
+          "type": "String",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE"
+        },
+        {
+          "name": "x",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "y",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "hp",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "maxHp",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "dx",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "dy",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "action",
+          "type": "Action",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE"
+        },
+        {
+          "name": "equippedWeapon",
+          "type": "Weapon",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE",
+          "referencesClass": "Weapon"
+        },
+        {
+          "name": "inventory",
+          "type": "List\u003cItems\u003e",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PLAIN_COLLECTION"
+        },
+        {
+          "name": "lastActionTime",
+          "type": "long",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "session",
+          "type": "WebSocketSession",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "isAlive",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "hp",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "canAct",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "lastActionTime",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "updateLastAction",
+          "hasScheduledAnnotation": false,
+          "accesses": [],
+          "riskNotes": []
+        }
+      ]
+    },
+    {
+      "className": "GameState",
+      "sourceFile": "GameState.java",
+      "fields": [
+        {
+          "name": "instance",
+          "type": "GameState",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": true,
+          "category": "OBJECT_REFERENCE",
+          "referencesClass": "GameState"
+        },
+        {
+          "name": "phase",
+          "type": "GamePhase",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE"
+        },
+        {
+          "name": "playersNeededToStart",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        },
+        {
+          "name": "players",
+          "type": "ConcurrentHashMap\u003cString,GamePlayer\u003e",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "CONCURRENT_SAFE"
+        },
+        {
+          "name": "weaponsOnGround",
+          "type": "List\u003cWeapon\u003e",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PLAIN_COLLECTION"
+        },
+        {
+          "name": "gridSize",
+          "type": "int",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "PRIMITIVE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getInstance",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "instance",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "instance",
+              "type": "WRITE",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "instance",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "addPlayer",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "players",
+              "type": "WRITE",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "players",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "playersNeededToStart",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "phase",
+              "type": "WRITE",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "removePlayer",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "players",
+              "type": "WRITE",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "removePlayer",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "players",
+              "type": "WRITE",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "getPlayer",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "players",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "getAllPlayers",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "players",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "addWeapon",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "weaponsOnGround",
+              "type": "WRITE",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "removeWeapon",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "weaponsOnGround",
+              "type": "WRITE",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "reset",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "players",
+              "type": "WRITE",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "weaponsOnGround",
+              "type": "WRITE",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "phase",
+              "type": "WRITE",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        }
+      ]
+    },
+    {
+      "className": "GameService",
+      "sourceFile": "GameService.java",
+      "fields": [
+        {
+          "name": "playerRepository",
+          "type": "PlayerRepository",
+          "isVolatile": false,
+          "isFinal": true,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE",
+          "referencesClass": "PlayerRepository"
+        },
+        {
+          "name": "gameState",
+          "type": "GameState",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE",
+          "referencesClass": "GameState"
+        },
+        {
+          "name": "gson",
+          "type": "Gson",
+          "isVolatile": false,
+          "isFinal": true,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "movePlayer",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "checkWeaponPickup",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gson",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "spawnWeapons",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "attack",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "getPlayerAtTile",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "checkWinner",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        }
+      ]
+    },
+    {
+      "className": "GameWebSocket",
+      "sourceFile": "GameWebSocket.java",
+      "fields": [
+        {
+          "name": "gameService",
+          "type": "GameService",
+          "isVolatile": false,
+          "isFinal": true,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE",
+          "referencesClass": "GameService"
+        },
+        {
+          "name": "gameState",
+          "type": "GameState",
+          "isVolatile": false,
+          "isFinal": true,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE",
+          "referencesClass": "GameState"
+        },
+        {
+          "name": "gson",
+          "type": "Gson",
+          "isVolatile": false,
+          "isFinal": true,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "afterConnectionEstablished",
+          "hasScheduledAnnotation": false,
+          "concurrentTrigger": "WEBSOCKET_HANDLER_OVERRIDE",
+          "accesses": [],
+          "riskNotes": []
+        },
+        {
+          "name": "handleTextMessage",
+          "hasScheduledAnnotation": false,
+          "concurrentTrigger": "WEBSOCKET_HANDLER_OVERRIDE",
+          "accesses": [
+            {
+              "field": "gson",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gson",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameService",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameService",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameService",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "afterConnectionClosed",
+          "hasScheduledAnnotation": false,
+          "concurrentTrigger": "WEBSOCKET_HANDLER_OVERRIDE",
+          "accesses": [
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        }
+      ]
+    },
+    {
+      "className": "WebSocketConfig",
+      "sourceFile": "WebSocketConfig.java",
+      "fields": [
+        {
+          "name": "gameWebSocket",
+          "type": "GameWebSocket",
+          "isVolatile": false,
+          "isFinal": true,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE",
+          "referencesClass": "GameWebSocket"
+        }
+      ],
+      "methods": [
+        {
+          "name": "registerWebSocketHandlers",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "gameWebSocket",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        }
+      ]
+    },
+    {
+      "className": "GameLoop",
+      "sourceFile": "GameLoop.java",
+      "fields": [
+        {
+          "name": "gameState",
+          "type": "GameState",
+          "isVolatile": false,
+          "isFinal": true,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE",
+          "referencesClass": "GameState"
+        },
+        {
+          "name": "gameService",
+          "type": "GameService",
+          "isVolatile": false,
+          "isFinal": true,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE",
+          "referencesClass": "GameService"
+        },
+        {
+          "name": "gson",
+          "type": "Gson",
+          "isVolatile": false,
+          "isFinal": false,
+          "isStatic": false,
+          "category": "OBJECT_REFERENCE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "tick",
+          "hasScheduledAnnotation": true,
+          "concurrentTrigger": "SCHEDULED",
+          "accesses": [
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameService",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gson",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        },
+        {
+          "name": "buildStateJson",
+          "hasScheduledAnnotation": false,
+          "accesses": [
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gameState",
+              "type": "READ",
+              "guardedBySynchronized": false
+            },
+            {
+              "field": "gson",
+              "type": "READ",
+              "guardedBySynchronized": false
+            }
+          ],
+          "riskNotes": []
+        }
+      ]
+    }
+  ],
+  "crossClassAccesses": [
+    {
+      "callerClass": "PlayerController",
+      "callerMethod": "login",
+      "targetClass": "JWTServices",
+      "targetField": "EXPIRY",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to JWTServices.generateToken()"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "movePlayer",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.getPlayer()"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "movePlayer",
+      "targetClass": "GameState",
+      "targetField": "gridSize",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "direct field access"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "movePlayer",
+      "targetClass": "GameState",
+      "targetField": "gridSize",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "direct field access"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "checkWeaponPickup",
+      "targetClass": "GameState",
+      "targetField": "weaponsOnGround",
+      "type": "WRITE",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.removeWeapon()"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "checkWeaponPickup",
+      "targetClass": "GameState",
+      "targetField": "weaponsOnGround",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "direct field access"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "checkWeaponPickup",
+      "targetClass": "GameState",
+      "targetField": "weaponsOnGround",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "direct field access"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "spawnWeapons",
+      "targetClass": "GameState",
+      "targetField": "weaponsOnGround",
+      "type": "WRITE",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.addWeapon()"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "spawnWeapons",
+      "targetClass": "GameState",
+      "targetField": "weaponsOnGround",
+      "type": "WRITE",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.addWeapon()"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "spawnWeapons",
+      "targetClass": "GameState",
+      "targetField": "weaponsOnGround",
+      "type": "WRITE",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.addWeapon()"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "spawnWeapons",
+      "targetClass": "GameState",
+      "targetField": "gridSize",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "direct field access"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "spawnWeapons",
+      "targetClass": "GameState",
+      "targetField": "gridSize",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "direct field access"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "spawnWeapons",
+      "targetClass": "GameState",
+      "targetField": "gridSize",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "direct field access"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "spawnWeapons",
+      "targetClass": "GameState",
+      "targetField": "gridSize",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "direct field access"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "spawnWeapons",
+      "targetClass": "GameState",
+      "targetField": "gridSize",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "direct field access"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "spawnWeapons",
+      "targetClass": "GameState",
+      "targetField": "gridSize",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "direct field access"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "attack",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.getPlayer()"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "getPlayerAtTile",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.getAllPlayers()"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "getPlayerAtTile",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.getAllPlayers()"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "checkWinner",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.getAllPlayers()"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "checkWinner",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.getAllPlayers()"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "checkWinner",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "WRITE",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.reset()"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "checkWinner",
+      "targetClass": "GameState",
+      "targetField": "weaponsOnGround",
+      "type": "WRITE",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.reset()"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "checkWinner",
+      "targetClass": "GameState",
+      "targetField": "phase",
+      "type": "WRITE",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.reset()"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "checkWinner",
+      "targetClass": "GameState",
+      "targetField": "phase",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "direct field access"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "checkWinner",
+      "targetClass": "GameState",
+      "targetField": "phase",
+      "type": "WRITE",
+      "guardedBySynchronized": false,
+      "via": "direct field access"
+    },
+    {
+      "callerClass": "GameService",
+      "callerMethod": "checkWinner",
+      "targetClass": "GameState",
+      "targetField": "phase",
+      "type": "WRITE",
+      "guardedBySynchronized": false,
+      "via": "direct field access"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.getPlayer()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "WRITE",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.addPlayer()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.addPlayer()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameState",
+      "targetField": "playersNeededToStart",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.addPlayer()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameState",
+      "targetField": "phase",
+      "type": "WRITE",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.addPlayer()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.getAllPlayers()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameService",
+      "targetField": "gameState",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameService.spawnWeapons()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameService",
+      "targetField": "gameState",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameService.spawnWeapons()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameService",
+      "targetField": "gameState",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameService.spawnWeapons()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameService",
+      "targetField": "gameState",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameService.spawnWeapons()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameService",
+      "targetField": "gameState",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameService.spawnWeapons()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameService",
+      "targetField": "gameState",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameService.spawnWeapons()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameService",
+      "targetField": "gameState",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameService.spawnWeapons()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameService",
+      "targetField": "gameState",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameService.spawnWeapons()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameService",
+      "targetField": "gameState",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameService.spawnWeapons()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameService",
+      "targetField": "gameState",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameService.movePlayer()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameService",
+      "targetField": "gameState",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameService.movePlayer()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameService",
+      "targetField": "gameState",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameService.movePlayer()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameService",
+      "targetField": "gameState",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameService.attack()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameState",
+      "targetField": "gridSize",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "direct field access"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "handleTextMessage",
+      "targetClass": "GameState",
+      "targetField": "gridSize",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "direct field access"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "afterConnectionClosed",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.getAllPlayers()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "afterConnectionClosed",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.getAllPlayers()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "afterConnectionClosed",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.getAllPlayers()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "afterConnectionClosed",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "WRITE",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.removePlayer()"
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "afterConnectionClosed",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "WRITE",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.removePlayer()"
+    },
+    {
+      "callerClass": "GameLoop",
+      "callerMethod": "tick",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.getAllPlayers()"
+    },
+    {
+      "callerClass": "GameLoop",
+      "callerMethod": "tick",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.getAllPlayers()"
+    },
+    {
+      "callerClass": "GameLoop",
+      "callerMethod": "tick",
+      "targetClass": "GameService",
+      "targetField": "gameState",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameService.checkWinner()"
+    },
+    {
+      "callerClass": "GameLoop",
+      "callerMethod": "tick",
+      "targetClass": "GameService",
+      "targetField": "gameState",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameService.checkWinner()"
+    },
+    {
+      "callerClass": "GameLoop",
+      "callerMethod": "tick",
+      "targetClass": "GameService",
+      "targetField": "gameState",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameService.checkWinner()"
+    },
+    {
+      "callerClass": "GameLoop",
+      "callerMethod": "tick",
+      "targetClass": "GameService",
+      "targetField": "gameState",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameService.checkWinner()"
+    },
+    {
+      "callerClass": "GameLoop",
+      "callerMethod": "tick",
+      "targetClass": "GameService",
+      "targetField": "gameState",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameService.checkWinner()"
+    },
+    {
+      "callerClass": "GameLoop",
+      "callerMethod": "tick",
+      "targetClass": "GameService",
+      "targetField": "gameState",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameService.checkWinner()"
+    },
+    {
+      "callerClass": "GameLoop",
+      "callerMethod": "tick",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.getAllPlayers()"
+    },
+    {
+      "callerClass": "GameLoop",
+      "callerMethod": "tick",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "WRITE",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.reset()"
+    },
+    {
+      "callerClass": "GameLoop",
+      "callerMethod": "tick",
+      "targetClass": "GameState",
+      "targetField": "weaponsOnGround",
+      "type": "WRITE",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.reset()"
+    },
+    {
+      "callerClass": "GameLoop",
+      "callerMethod": "tick",
+      "targetClass": "GameState",
+      "targetField": "phase",
+      "type": "WRITE",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.reset()"
+    },
+    {
+      "callerClass": "GameLoop",
+      "callerMethod": "tick",
+      "targetClass": "GameState",
+      "targetField": "phase",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "direct field access"
+    },
+    {
+      "callerClass": "GameLoop",
+      "callerMethod": "buildStateJson",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.getAllPlayers()"
+    },
+    {
+      "callerClass": "GameLoop",
+      "callerMethod": "buildStateJson",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.getAllPlayers()"
+    },
+    {
+      "callerClass": "GameLoop",
+      "callerMethod": "buildStateJson",
+      "targetClass": "GameState",
+      "targetField": "weaponsOnGround",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "direct field access"
+    },
+    {
+      "callerClass": "GameLoop",
+      "callerMethod": "buildStateJson",
+      "targetClass": "GameState",
+      "targetField": "weaponsOnGround",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "direct field access"
+    },
+    {
+      "callerClass": "GameLoop",
+      "callerMethod": "buildStateJson",
+      "targetClass": "GameState",
+      "targetField": "weaponsOnGround",
+      "type": "READ",
+      "guardedBySynchronized": false,
+      "via": "direct field access"
+    }
+  ],
+  "projectRisks": [
+    {
+      "field": "instance",
+      "owningClass": "GameState",
+      "fieldType": "GameState",
+      "writers": [
+        "GameState.getInstance()"
+      ],
+      "readers": [
+        "GameState.getInstance()",
+        "GameState.getInstance()"
+      ],
+      "unguardedWriters": [
+        "GameState.getInstance()"
+      ],
+      "severity": "MEDIUM",
+      "signalCount": 3,
+      "reasons": [
+        "mutable object reference with no guard",
+        "1 unguarded writer",
+        "2 reader(s) with no synchronization guarantee"
+      ],
+      "summary": "Field \u0027GameState.instance\u0027 (GameState) has 1 writer(s) [1 unguarded] and 2 reader(s) across the project, with no synchronization or atomic/concurrent-safe type."
+    },
+    {
+      "field": "phase",
+      "owningClass": "GameState",
+      "fieldType": "GamePhase",
+      "writers": [
+        "GameState.addPlayer()",
+        "GameState.reset()",
+        "GameService.checkWinner() [call to GameState.reset()]",
+        "GameService.checkWinner() [direct field access]",
+        "GameService.checkWinner() [direct field access]",
+        "GameWebSocket.handleTextMessage() [call to GameState.addPlayer()]",
+        "GameLoop.tick() [call to GameState.reset()]"
+      ],
+      "readers": [
+        "GameService.checkWinner() [direct field access]",
+        "GameLoop.tick() [direct field access]"
+      ],
+      "unguardedWriters": [
+        "GameState.addPlayer()",
+        "GameState.reset()",
+        "GameService.checkWinner() [call to GameState.reset()]",
+        "GameService.checkWinner() [direct field access]",
+        "GameService.checkWinner() [direct field access]",
+        "GameWebSocket.handleTextMessage() [call to GameState.addPlayer()]",
+        "GameLoop.tick() [call to GameState.reset()]"
+      ],
+      "severity": "HIGH",
+      "signalCount": 4,
+      "reasons": [
+        "mutable object reference with no guard",
+        "7 unguarded writers",
+        "2 reader(s) with no synchronization guarantee",
+        "touched by a method that runs on its own thread (@Scheduled / message handler)"
+      ],
+      "summary": "Field \u0027GameState.phase\u0027 (GamePhase) has 7 writer(s) [7 unguarded] and 2 reader(s) across the project, with no synchronization or atomic/concurrent-safe type."
+    },
+    {
+      "field": "weaponsOnGround",
+      "owningClass": "GameState",
+      "fieldType": "List\u003cWeapon\u003e",
+      "writers": [
+        "GameState.addWeapon()",
+        "GameState.removeWeapon()",
+        "GameState.reset()",
+        "GameService.checkWeaponPickup() [call to GameState.removeWeapon()]",
+        "GameService.spawnWeapons() [call to GameState.addWeapon()]",
+        "GameService.spawnWeapons() [call to GameState.addWeapon()]",
+        "GameService.spawnWeapons() [call to GameState.addWeapon()]",
+        "GameService.checkWinner() [call to GameState.reset()]",
+        "GameLoop.tick() [call to GameState.reset()]"
+      ],
+      "readers": [
+        "GameService.checkWeaponPickup() [direct field access]",
+        "GameService.checkWeaponPickup() [direct field access]",
+        "GameLoop.buildStateJson() [direct field access]",
+        "GameLoop.buildStateJson() [direct field access]",
+        "GameLoop.buildStateJson() [direct field access]"
+      ],
+      "unguardedWriters": [
+        "GameState.addWeapon()",
+        "GameState.removeWeapon()",
+        "GameState.reset()",
+        "GameService.checkWeaponPickup() [call to GameState.removeWeapon()]",
+        "GameService.spawnWeapons() [call to GameState.addWeapon()]",
+        "GameService.spawnWeapons() [call to GameState.addWeapon()]",
+        "GameService.spawnWeapons() [call to GameState.addWeapon()]",
+        "GameService.checkWinner() [call to GameState.reset()]",
+        "GameLoop.tick() [call to GameState.reset()]"
+      ],
+      "severity": "HIGH",
+      "signalCount": 4,
+      "reasons": [
+        "plain (non-thread-safe) collection type",
+        "9 unguarded writers",
+        "5 reader(s) with no synchronization guarantee",
+        "touched by a method that runs on its own thread (@Scheduled / message handler)"
+      ],
+      "summary": "Field \u0027GameState.weaponsOnGround\u0027 (List\u003cWeapon\u003e) has 9 writer(s) [9 unguarded] and 5 reader(s) across the project, with no synchronization or atomic/concurrent-safe type."
+    }
+  ]
+}

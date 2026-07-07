@@ -1,0 +1,249 @@
+{
+  "className": "GameState",
+  "sourceFile": "GameState.java",
+  "fields": [
+    {
+      "name": "instance",
+      "type": "GameState",
+      "isVolatile": false,
+      "isFinal": false,
+      "isStatic": true,
+      "category": "OBJECT_REFERENCE"
+    },
+    {
+      "name": "phase",
+      "type": "GamePhase",
+      "isVolatile": false,
+      "isFinal": false,
+      "isStatic": false,
+      "category": "OBJECT_REFERENCE"
+    },
+    {
+      "name": "playersNeededToStart",
+      "type": "int",
+      "isVolatile": false,
+      "isFinal": false,
+      "isStatic": false,
+      "category": "PRIMITIVE"
+    },
+    {
+      "name": "players",
+      "type": "ConcurrentHashMap\u003cString,GamePlayer\u003e",
+      "isVolatile": false,
+      "isFinal": false,
+      "isStatic": false,
+      "category": "CONCURRENT_SAFE"
+    },
+    {
+      "name": "weaponsOnGround",
+      "type": "List\u003cWeapon\u003e",
+      "isVolatile": false,
+      "isFinal": false,
+      "isStatic": false,
+      "category": "PLAIN_COLLECTION"
+    },
+    {
+      "name": "gridSize",
+      "type": "int",
+      "isVolatile": false,
+      "isFinal": false,
+      "isStatic": false,
+      "category": "PRIMITIVE"
+    }
+  ],
+  "methods": [
+    {
+      "name": "getInstance",
+      "hasScheduledAnnotation": false,
+      "accesses": [
+        {
+          "field": "instance",
+          "type": "READ",
+          "guardedBySynchronized": false
+        },
+        {
+          "field": "instance",
+          "type": "WRITE",
+          "guardedBySynchronized": false
+        },
+        {
+          "field": "instance",
+          "type": "READ",
+          "guardedBySynchronized": false
+        }
+      ],
+      "riskNotes": []
+    },
+    {
+      "name": "addPlayer",
+      "hasScheduledAnnotation": false,
+      "accesses": [
+        {
+          "field": "players",
+          "type": "WRITE",
+          "guardedBySynchronized": false
+        },
+        {
+          "field": "players",
+          "type": "READ",
+          "guardedBySynchronized": false
+        },
+        {
+          "field": "playersNeededToStart",
+          "type": "READ",
+          "guardedBySynchronized": false
+        },
+        {
+          "field": "phase",
+          "type": "WRITE",
+          "guardedBySynchronized": false
+        }
+      ],
+      "riskNotes": []
+    },
+    {
+      "name": "removePlayer",
+      "hasScheduledAnnotation": false,
+      "accesses": [
+        {
+          "field": "players",
+          "type": "WRITE",
+          "guardedBySynchronized": false
+        }
+      ],
+      "riskNotes": []
+    },
+    {
+      "name": "removePlayer",
+      "hasScheduledAnnotation": false,
+      "accesses": [
+        {
+          "field": "players",
+          "type": "WRITE",
+          "guardedBySynchronized": false
+        }
+      ],
+      "riskNotes": []
+    },
+    {
+      "name": "getPlayer",
+      "hasScheduledAnnotation": false,
+      "accesses": [
+        {
+          "field": "players",
+          "type": "READ",
+          "guardedBySynchronized": false
+        }
+      ],
+      "riskNotes": []
+    },
+    {
+      "name": "getAllPlayers",
+      "hasScheduledAnnotation": false,
+      "accesses": [
+        {
+          "field": "players",
+          "type": "READ",
+          "guardedBySynchronized": false
+        }
+      ],
+      "riskNotes": []
+    },
+    {
+      "name": "addWeapon",
+      "hasScheduledAnnotation": false,
+      "accesses": [
+        {
+          "field": "weaponsOnGround",
+          "type": "WRITE",
+          "guardedBySynchronized": false
+        }
+      ],
+      "riskNotes": []
+    },
+    {
+      "name": "removeWeapon",
+      "hasScheduledAnnotation": false,
+      "accesses": [
+        {
+          "field": "weaponsOnGround",
+          "type": "WRITE",
+          "guardedBySynchronized": false
+        }
+      ],
+      "riskNotes": []
+    },
+    {
+      "name": "reset",
+      "hasScheduledAnnotation": false,
+      "accesses": [
+        {
+          "field": "players",
+          "type": "WRITE",
+          "guardedBySynchronized": false
+        },
+        {
+          "field": "weaponsOnGround",
+          "type": "WRITE",
+          "guardedBySynchronized": false
+        },
+        {
+          "field": "phase",
+          "type": "WRITE",
+          "guardedBySynchronized": false
+        }
+      ],
+      "riskNotes": []
+    }
+  ],
+  "crossMethodRisks": [
+    {
+      "field": "instance",
+      "fieldType": "GameState",
+      "writers": [
+        "getInstance"
+      ],
+      "readers": [
+        "getInstance",
+        "getInstance"
+      ],
+      "unguardedWriters": [
+        "getInstance"
+      ],
+      "severity": "MEDIUM",
+      "summary": "Field \u0027instance\u0027 (GameState) is written by 1 method(s) [getInstance unguarded] and read by 2 method(s), with no synchronization or atomic/concurrent-safe type."
+    },
+    {
+      "field": "phase",
+      "fieldType": "GamePhase",
+      "writers": [
+        "addPlayer",
+        "reset"
+      ],
+      "readers": [],
+      "unguardedWriters": [
+        "addPlayer",
+        "reset"
+      ],
+      "severity": "HIGH",
+      "summary": "Field \u0027phase\u0027 (GamePhase) is written by 2 method(s) [addPlayer, reset unguarded] and read by 0 method(s), with no synchronization or atomic/concurrent-safe type."
+    },
+    {
+      "field": "weaponsOnGround",
+      "fieldType": "List\u003cWeapon\u003e",
+      "writers": [
+        "addWeapon",
+        "removeWeapon",
+        "reset"
+      ],
+      "readers": [],
+      "unguardedWriters": [
+        "addWeapon",
+        "removeWeapon",
+        "reset"
+      ],
+      "severity": "HIGH",
+      "summary": "Field \u0027weaponsOnGround\u0027 (List\u003cWeapon\u003e) is written by 3 method(s) [addWeapon, removeWeapon, reset unguarded] and read by 0 method(s), with no synchronization or atomic/concurrent-safe type."
+    }
+  ]
+}

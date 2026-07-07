@@ -1,0 +1,15 @@
+com/raceguard/model/ProjectGraph.class
+com/raceguard/model/ProjectRisk.class
+com/raceguard/model/MethodInfo.class
+com/raceguard/model/RiskNote.class
+com/raceguard/util/TriggerDetector.class
+com/raceguard/model/ClassGraph.class
+com/raceguard/model/FieldInfo.class
+com/raceguard/model/AccessType.class
+com/raceguard/parser/ClassGraphBuilder.class
+com/raceguard/model/CrossClassAccess.class
+com/raceguard/util/AnalyzerUtils.class
+com/raceguard/model/FieldAccess.class
+com/raceguard/ProjectAnalyzer.class
+com/raceguard/model/ParsedUnit.class
+com/raceguard/analysis/CrossClassLinker.class
