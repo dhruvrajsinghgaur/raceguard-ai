@@ -4,6 +4,7 @@ com/raceguard/model/MethodInfo.class
 com/raceguard/model/RiskNote.class
 com/raceguard/util/TriggerDetector.class
 com/raceguard/model/ClassGraph.class
+com/raceguard/analysis/RiskEngine.class
 com/raceguard/model/FieldInfo.class
 com/raceguard/model/AccessType.class
 com/raceguard/parser/ClassGraphBuilder.class

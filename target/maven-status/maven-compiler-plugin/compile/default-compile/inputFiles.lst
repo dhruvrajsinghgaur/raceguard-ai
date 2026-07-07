@@ -1,5 +1,6 @@
 /home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/ProjectAnalyzer.java
 /home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/analysis/CrossClassLinker.java
+/home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/analysis/RiskEngine.java
 /home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/model/AccessType.java
 /home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/model/ClassGraph.java
 /home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/model/CrossClassAccess.java
