@@ -24,4 +24,6 @@ public class ProjectRisk {
 
     public String summary;
 
+    public String pattern;
+
 }

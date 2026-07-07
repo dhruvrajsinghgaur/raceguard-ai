@@ -17,11 +17,29 @@ public final class RiskEngine {
     ) {
 
         Map<String, ParsedUnit> byClassName = new HashMap<>();
+
         for (ParsedUnit unit : units) {
             byClassName.put(unit.graph.className, unit);
         }
 
         List<ProjectRisk> risks = new ArrayList<>();
+
+        risks.addAll(
+                detectSharedMutableState(
+                        units,
+                        crossClassAccesses,
+                        byClassName
+                )
+        );
+
+        return risks;
+    }
+
+    private static List<ProjectRisk> detectSharedMutableState(
+            List<ParsedUnit> units,
+            List<CrossClassAccess> crossClassAccesses,
+            Map<String, ParsedUnit> byClassName
+    ) {
 
         List<ProjectRisk> projectRisks = new ArrayList<>();
         for (ParsedUnit u : units) {
@@ -96,11 +114,11 @@ public final class RiskEngine {
                         + ") has " + writers.size() + " writer(s) [" + unguardedWriters.size()
                         + " unguarded] and " + readers.size() + " reader(s) across the project, "
                         + "with no synchronization or atomic/concurrent-safe type.";
+                risk.pattern = "SHARED_MUTABLE_STATE";
                 projectRisks.add(risk);
             }
         }
 
-
-        return risks;
+        return projectRisks;
     }
 }

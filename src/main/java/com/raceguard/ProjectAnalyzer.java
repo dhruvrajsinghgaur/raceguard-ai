@@ -48,7 +48,6 @@ public class ProjectAnalyzer {
         }
         System.err.println("Found " + javaFiles.size() + " Java file(s). Parsing...");
 
-        // ---- Pass A: parse each file, build its own per-class graph ----
         List<ParsedUnit> units = new ArrayList<>();
         for (File f : javaFiles) {
             try {
@@ -76,7 +75,7 @@ public class ProjectAnalyzer {
                         crossClassAccesses
                 );
 
-        // ---- Output ----
+        // Output
         ProjectGraph output = new ProjectGraph();
         output.classes = units.stream().map(u -> u.graph).collect(Collectors.toList());
         output.crossClassAccesses = crossClassAccesses;
@@ -92,6 +91,7 @@ public class ProjectAnalyzer {
         System.err.println("\nWrote output/project_graph.json ("
                 + output.classes.size() + " classes, "
                 + crossClassAccesses.size() + " cross-class accesses, "
-                + projectRisks.size() + " project risks)");
+                + projectRisks.size() + " project risks)"
+        );
     }
 }

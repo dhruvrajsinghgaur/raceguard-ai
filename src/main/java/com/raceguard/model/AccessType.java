@@ -2,5 +2,6 @@ package com.raceguard.model;
 
 public enum AccessType {
     READ,
-    WRITE
+    WRITE,
+    READ_MODIFY_WRITE
 }

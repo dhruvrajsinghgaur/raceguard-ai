@@ -25,7 +25,6 @@ public final class CrossClassLinker {
                                 Function.identity()
                         ));
 
-        // ---- Pass B: mark which OBJECT_REFERENCE fields point at classes we know ----
         for (ParsedUnit u : units) {
             for (FieldInfo f : u.graph.fields) {
                 if (!f.category.equals("OBJECT_REFERENCE")) continue;
