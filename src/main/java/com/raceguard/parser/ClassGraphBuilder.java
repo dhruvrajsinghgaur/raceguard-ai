@@ -4,6 +4,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.ForStmt;
 
@@ -53,17 +54,36 @@ public final class ClassGraphBuilder {
             mInfo.concurrentTrigger = TriggerDetector.detect(method);
 
             method.getBody().ifPresent(body -> {
+                final int[] sequence = {0};
                 body.findAll(NameExpr.class).forEach(nameExpr -> {
-                    String name = nameExpr.getNameAsString();
-                    if (!fieldsByName.containsKey(name)) return;
 
-                    boolean insideSync = AnalyzerUtils.isInsideSynchronized(nameExpr);
-                    AccessType access = AnalyzerUtils.classifyAccess(nameExpr);
+                    String fieldName = nameExpr.getNameAsString();
+
+                    if (!fieldsByName.containsKey(fieldName))
+                        return;
+
+                    boolean insideSync =
+                            AnalyzerUtils.isInsideSynchronized(nameExpr);
+
+                    AccessType access =
+                            AnalyzerUtils.classifyAccess(nameExpr);
 
                     FieldAccess fa = new FieldAccess();
-                    fa.field = name;
+
+                    fa.field = fieldName;
                     fa.type = access;
                     fa.guardedBySynchronized = insideSync;
+
+                    fa.sequence = sequence[0]++;
+
+                    fa.line =
+                            nameExpr.getBegin()
+                                    .map(p -> p.line)
+                                    .orElse(-1);
+
+                    fa.operation =
+                            AnalyzerUtils.inferOperation(nameExpr);
+
                     mInfo.accesses.add(fa);
                 });
 

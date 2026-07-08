@@ -8,4 +8,10 @@ public class FieldAccess {
 
     public boolean guardedBySynchronized;
 
+    public String operation;
+
+    public int sequence;
+
+    public int line;
+
 }

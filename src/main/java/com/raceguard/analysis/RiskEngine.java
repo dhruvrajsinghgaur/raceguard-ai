@@ -2,14 +2,57 @@ package com.raceguard.analysis;
 
 import com.raceguard.model.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class RiskEngine {
 
     private RiskEngine() {}
+
+    private static boolean isWrite(AccessType type) {
+        return type == AccessType.WRITE
+                || type == AccessType.READ_MODIFY_WRITE;
+    }
+
+    private static boolean isRead(AccessType type) {
+        return type == AccessType.READ
+                || type == AccessType.READ_MODIFY_WRITE;
+    }
+
+    private static boolean isReadModifyWrite(AccessType type) {
+        return type == AccessType.READ_MODIFY_WRITE;
+    }
+
+    private static ProjectRisk buildRisk(
+            String pattern,
+            String owningClass,
+            String field,
+            String fieldType,
+            List<String> writers,
+            List<String> readers,
+            List<String> unguardedWriters,
+            String severity,
+            int signalCount,
+            List<String> reasons,
+            String summary
+    ) {
+        ProjectRisk risk = new ProjectRisk();
+
+        risk.pattern = pattern;
+        risk.field = field;
+        risk.owningClass = owningClass;
+        risk.fieldType = fieldType;
+
+        risk.writers = new ArrayList<>(writers);
+        risk.readers = new ArrayList<>(readers);
+        risk.unguardedWriters = new ArrayList<>(unguardedWriters);
+
+        risk.severity = severity;
+        risk.signalCount = signalCount;
+        risk.reasons = new ArrayList<>(reasons);
+        risk.summary = summary;
+
+        return risk;
+    }
 
     public static List<ProjectRisk> analyze(
             List<ParsedUnit> units,
@@ -32,6 +75,26 @@ public final class RiskEngine {
                 )
         );
 
+        risks.addAll(
+                detectLostUpdate(
+                        units,
+                        crossClassAccesses,
+                        byClassName
+                )
+        );
+
+        risks.addAll(
+                detectUnsafePublication(
+                        units,
+                        crossClassAccesses,
+                        byClassName
+                )
+        );
+
+        risks.addAll(
+                detectCheckThenAct(units)
+        );
+
         return risks;
     }
 
@@ -49,30 +112,43 @@ public final class RiskEngine {
                 List<String> writers = new ArrayList<>();
                 List<String> unguardedWriters = new ArrayList<>();
                 List<String> readers = new ArrayList<>();
+
                 boolean anyConcurrentTrigger = false;
 
                 for (MethodInfo m : u.graph.methods) {
                     for (FieldAccess fa : m.accesses) {
                         if (!fa.field.equals(field.name)) continue;
                         String label = u.graph.className + "." + m.name + "()";
-                        if (fa.type == AccessType.WRITE) {
-                            writers.add(label);
-                            if (!fa.guardedBySynchronized) unguardedWriters.add(label);
-                        } else {
+                        if (isRead(fa.type)) {
                             readers.add(label);
                         }
+
+                        if (isWrite(fa.type)) {
+                            writers.add(label);
+
+                            if (!fa.guardedBySynchronized) {
+                                unguardedWriters.add(label);
+                            }
+                        }
+
                         if (m.concurrentTrigger != null) anyConcurrentTrigger = true;
                     }
                 }
                 for (CrossClassAccess cca : crossClassAccesses) {
                     if (!cca.targetClass.equals(u.graph.className) || !cca.targetField.equals(field.name)) continue;
                     String label = cca.callerClass + "." + cca.callerMethod + "() [" + cca.via + "]";
-                    if (cca.type == AccessType.WRITE) {
-                        writers.add(label);
-                        if (!cca.guardedBySynchronized) unguardedWriters.add(label);
-                    } else {
+                    if (isRead(cca.type)) {
                         readers.add(label);
                     }
+
+                    if (isWrite(cca.type)) {
+                        writers.add(label);
+
+                        if (!cca.guardedBySynchronized) {
+                            unguardedWriters.add(label);
+                        }
+                    }
+
                     ParsedUnit callerUnit = byClassName.get(cca.callerClass);
                     if (callerUnit != null) {
                         for (MethodInfo m : callerUnit.graph.methods) {
@@ -100,25 +176,504 @@ public final class RiskEngine {
                 int signalCount = reasons.size();
                 String severity = (unguardedWriters.size() > 1 || anyConcurrentTrigger) ? "HIGH" : "MEDIUM";
 
-                ProjectRisk risk = new ProjectRisk();
-                risk.field = field.name;
-                risk.owningClass = u.graph.className;
-                risk.fieldType = field.type;
-                risk.writers = writers;
-                risk.readers = readers;
-                risk.unguardedWriters = unguardedWriters;
-                risk.severity = severity;
-                risk.signalCount = signalCount;
-                risk.reasons = reasons;
-                risk.summary = "Field '" + u.graph.className + "." + field.name + "' (" + field.type
-                        + ") has " + writers.size() + " writer(s) [" + unguardedWriters.size()
-                        + " unguarded] and " + readers.size() + " reader(s) across the project, "
-                        + "with no synchronization or atomic/concurrent-safe type.";
-                risk.pattern = "SHARED_MUTABLE_STATE";
-                projectRisks.add(risk);
+                projectRisks.add(
+                        buildRisk(
+                                "SHARED_MUTABLE_STATE",
+                                u.graph.className,
+                                field.name,
+                                field.type,
+                                writers,
+                                readers,
+                                unguardedWriters,
+                                severity,
+                                signalCount,
+                                reasons,
+                                "Field '" + u.graph.className + "." + field.name +
+                                        "' (" + field.type + ") has " +
+                                        writers.size() + " writer(s) [" +
+                                        unguardedWriters.size() + " unguarded] and " +
+                                        readers.size() + " reader(s) across the project."
+                        )
+                );
             }
         }
 
         return projectRisks;
+    }
+
+    private static List<ProjectRisk> detectLostUpdate(
+            List<ParsedUnit> units,
+            List<CrossClassAccess> crossClassAccesses,
+            Map<String, ParsedUnit> byClassName
+    ) {
+
+        List<ProjectRisk> risks = new ArrayList<>();
+
+        for (ParsedUnit u : units) {
+            for (FieldInfo field : u.graph.fields) {
+
+                if (!field.category.equals("PRIMITIVE"))
+                    continue;
+
+                List<String> rmwPaths = new ArrayList<>();
+                List<String> unguardedRmw = new ArrayList<>();
+
+                boolean concurrentTrigger = false;
+
+                // Own class accesses
+                for (MethodInfo method : u.graph.methods) {
+
+                    for (FieldAccess access : method.accesses) {
+
+                        if (!access.field.equals(field.name))
+                            continue;
+
+                        if (!isReadModifyWrite(access.type))
+                            continue;
+
+                        String label =
+                                u.graph.className + "." + method.name + "()";
+
+                        rmwPaths.add(label);
+
+                        if (!access.guardedBySynchronized) {
+                            unguardedRmw.add(label);
+                        }
+                        if (!access.guardedBySynchronized &&
+                                method.concurrentTrigger != null) {
+                            concurrentTrigger = true;
+                        }
+                    }
+                }
+
+                // Cross-class accesses
+                for (CrossClassAccess access : crossClassAccesses) {
+
+                    if (!access.targetClass.equals(u.graph.className))
+                        continue;
+
+                    if (!access.targetField.equals(field.name))
+                        continue;
+
+                    if (!isReadModifyWrite(access.type))
+                        continue;
+
+                    String label =
+                            access.callerClass + "."
+                                    + access.callerMethod + "()";
+
+                    rmwPaths.add(label);
+
+                    if (!access.guardedBySynchronized) {
+                        unguardedRmw.add(label);
+                    }
+
+                    ParsedUnit caller = byClassName.get(access.callerClass);
+
+                    if (caller != null) {
+                        for (MethodInfo method : caller.graph.methods) {
+                            if (method.name.equals(access.callerMethod)
+                                    && method.concurrentTrigger != null
+                                    && !access.guardedBySynchronized) {
+
+                                concurrentTrigger = true;
+                            }
+                        }
+                    }
+                }
+
+                if (rmwPaths.size() < 2)
+                    continue;
+
+                if (unguardedRmw.size() < 2)
+                    continue;
+
+                List<String> reasons = new ArrayList<>();
+
+                reasons.add(
+                        unguardedRmw.size()
+                                + " unguarded read-modify-write operations detected"
+                );
+
+                reasons.add(
+                        "read-modify-write sequences are not atomic"
+                );
+
+                if (concurrentTrigger) {
+                    reasons.add(
+                            "reachable from concurrent execution paths"
+                    );
+                }
+
+                if (!field.isVolatile) {
+                    reasons.add(
+                            "field is not volatile"
+                    );
+                }
+
+                int signalCount = 0;
+
+                signalCount++; // multiple RMW operations
+                signalCount++; // unguarded RMW operations
+
+                if (concurrentTrigger) {
+                    signalCount++;
+                }
+
+                if (!field.isVolatile) {
+                    signalCount++;
+                }
+
+                String severity;
+
+                if (signalCount >= 3 || unguardedRmw.size() >= 2) {
+                    severity = "HIGH";
+                } else {
+                    severity = "MEDIUM";
+                }
+
+                String summary =
+                        "Field '" + field.name +
+                                "' is modified through read-modify-write operations in: " +
+                                String.join(", ", unguardedRmw) +
+                                ". Concurrent execution may overwrite updates.";
+
+                risks.add(
+                        buildRisk(
+                                "LOST_UPDATE",
+                                u.graph.className,
+                                field.name,
+                                field.type,
+                                rmwPaths,
+                                List.of(),
+                                unguardedRmw,
+                                severity,
+                                signalCount,
+                                reasons,
+                                summary
+                        ));
+            }
+        }
+
+        return risks;
+    }
+
+    private static List<ProjectRisk> detectUnsafePublication(
+            List<ParsedUnit> units,
+            List<CrossClassAccess> crossClassAccesses,
+            Map<String, ParsedUnit> byClassName
+    ) {
+
+        List<ProjectRisk> risks = new ArrayList<>();
+
+        for (ParsedUnit u : units) {
+
+            for (FieldInfo field : u.graph.fields) {
+
+                if (!field.category.equals("OBJECT_REFERENCE"))
+                    continue;
+
+                if (field.isFinal || field.isVolatile)
+                    continue;
+
+                List<String> readers = new ArrayList<>();
+                List<String> writers = new ArrayList<>();
+
+                for (MethodInfo method : u.graph.methods) {
+
+                    for (FieldAccess access : method.accesses) {
+
+                        if (!access.field.equals(field.name))
+                            continue;
+
+                        String label =
+                                u.graph.className + "."
+                                        + method.name + "()";
+
+                        if (isRead(access.type))
+                            readers.add(label);
+
+                        if (isWrite(access.type))
+                            writers.add(label);
+                    }
+                }
+
+                if (writers.isEmpty() || readers.isEmpty())
+                    continue;
+
+                risks.add(
+                        buildRisk(
+                                "UNSAFE_PUBLICATION",
+                                u.graph.className,
+                                field.name,
+                                field.type,
+                                writers,
+                                readers,
+                                writers,
+                                "MEDIUM",
+                                3,
+                                List.of(
+                                        "mutable object reference",
+                                        "not final",
+                                        "not volatile"
+                                ),
+                                "Object reference '" + field.name +
+                                        "' is written and later read without a visibility guarantee."
+                        )
+                );
+            }
+        }
+
+        return risks;
+    }
+
+    private static FieldAccessSummary summarizeField(
+            ParsedUnit owner,
+            FieldInfo field,
+            List<CrossClassAccess> crossClassAccesses,
+            Map<String, ParsedUnit> byClassName
+    ) {
+
+        FieldAccessSummary s = new FieldAccessSummary();
+
+        for (MethodInfo method : owner.graph.methods) {
+
+            for (FieldAccess access : method.accesses) {
+
+                if (!access.field.equals(field.name))
+                    continue;
+
+                String label =
+                        owner.graph.className +
+                                "." +
+                                method.name +
+                                "()";
+
+                if (isRead(access.type)) {
+                    s.readers.add(label);
+
+                    if (!access.guardedBySynchronized) {
+                        s.unguardedReaders.add(label);
+                    }
+                }
+
+                if (isWrite(access.type)) {
+                    s.writers.add(label);
+
+                    if (!access.guardedBySynchronized) {
+                        s.unguardedWriters.add(label);
+                    }
+                }
+
+                if (isReadModifyWrite(access.type)) {
+                    s.rmw.add(label);
+
+                    if (!access.guardedBySynchronized) {
+                        s.unguardedRmw.add(label);
+                    }
+                }
+
+                if (method.concurrentTrigger != null
+                        && !access.guardedBySynchronized) {
+                    s.concurrentTrigger = true;
+                }
+            }
+        }
+
+        for (CrossClassAccess access : crossClassAccesses) {
+
+            if (!access.targetClass.equals(owner.graph.className))
+                continue;
+
+            if (!access.targetField.equals(field.name))
+                continue;
+
+            String label =
+                    access.callerClass +
+                            "." +
+                            access.callerMethod +
+                            "()";
+
+            if (isRead(access.type)) {
+                s.readers.add(label);
+
+                if (!access.guardedBySynchronized) {
+                    s.unguardedReaders.add(label);
+                }
+            }
+
+            if (isWrite(access.type)) {
+                s.writers.add(label);
+
+                if (!access.guardedBySynchronized) {
+                    s.unguardedWriters.add(label);
+                }
+            }
+
+            if (isReadModifyWrite(access.type)) {
+                s.rmw.add(label);
+
+                if (!access.guardedBySynchronized) {
+                    s.unguardedRmw.add(label);
+                }
+            }
+
+            ParsedUnit caller =
+                    byClassName.get(access.callerClass);
+
+            if (caller != null) {
+
+                for (MethodInfo method : caller.graph.methods) {
+
+                    if (method.name.equals(access.callerMethod)
+                            && method.concurrentTrigger != null
+                            && !access.guardedBySynchronized) {
+
+                        s.concurrentTrigger = true;
+                    }
+                }
+            }
+        }
+
+        return s;
+    }
+
+    private static List<ProjectRisk> detectCheckThenAct(
+            List<ParsedUnit> units
+    ) {
+
+        List<ProjectRisk> risks = new ArrayList<>();
+
+        Set<String> reported = new HashSet<>();
+
+        for (ParsedUnit u : units) {
+
+            for (MethodInfo method : u.graph.methods) {
+
+                List<FieldAccess> accesses = method.accesses;
+
+                for (int i = 0; i < accesses.size() - 1; i++) {
+
+                    FieldAccess first = accesses.get(i);
+                    FieldAccess second = accesses.get(i + 1);
+
+                    // Same field
+                    if (!first.field.equals(second.field))
+                        continue;
+
+                    // Operations should be close together
+                    if (second.sequence - first.sequence > 3)
+                        continue;
+
+                    // Check operation
+                    if (!isCheckOperation(first.operation))
+                        continue;
+
+                    // Mutation operation
+                    if (!isMutationOperation(second.operation))
+                        continue;
+
+                    // Ignore synchronized accesses
+                    if (first.guardedBySynchronized
+                            || second.guardedBySynchronized) {
+                        continue;
+                    }
+
+                    String key =
+                            u.graph.className +
+                                    ":" +
+                                    method.name +
+                                    ":" +
+                                    first.field;
+
+                    if (!reported.add(key))
+                        continue;
+
+                    List<String> reasons = List.of(
+                            first.operation + " followed by " + second.operation,
+                            "same field",
+                            "not synchronized"
+                    );
+
+                    String summary =
+                            "Method '" +
+                                    u.graph.className +
+                                    "." +
+                                    method.name +
+                                    "()' performs a check-then-act sequence on field '" +
+                                    first.field +
+                                    "' (" +
+                                    first.operation +
+                                    " → " +
+                                    second.operation +
+                                    ") without synchronization. Concurrent execution may invalidate the check before the update occurs.";
+
+                    String fieldType = "unknown";
+
+                    for (FieldInfo f : u.graph.fields) {
+                        if (f.name.equals(first.field)) {
+                            fieldType = f.type;
+                            break;
+                        }
+                    }
+
+                    risks.add(
+                            buildRisk(
+                                    "CHECK_THEN_ACT",
+                                    u.graph.className,
+                                    first.field,
+                                    fieldType,
+                                    List.of(
+                                            u.graph.className +
+                                                    "." +
+                                                    method.name +
+                                                    "()"
+                                    ),
+                                    List.of(
+                                            u.graph.className +
+                                                    "." +
+                                                    method.name +
+                                                    "()"
+                                    ),
+                                    List.of(),
+                                    "HIGH",
+                                    reasons.size(),
+                                    reasons,
+                                    summary
+                            )
+                    );
+                }
+            }
+        }
+
+        return risks;
+    }
+
+    private static boolean isCheckOperation(String op) {
+
+        if (op == null)
+            return false;
+
+        return op.equals("contains")
+                || op.equals("containsKey")
+                || op.equals("containsValue")
+                || op.equals("get")
+                || op.equals("find")
+                || op.equals("lookup");
+    }
+
+    private static boolean isMutationOperation(String op) {
+
+        if (op == null)
+            return false;
+
+        return op.equals("add")
+                || op.equals("put")
+                || op.equals("remove")
+                || op.equals("set")
+                || op.equals("clear")
+                || op.equals("putIfAbsent")
+                || op.equals("compute")
+                || op.equals("merge");
     }
 }

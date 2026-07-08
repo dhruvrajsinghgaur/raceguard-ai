@@ -2,6 +2,7 @@ package com.raceguard.util;
 
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.stmt.ForEachStmt;
 import com.github.javaparser.ast.stmt.SynchronizedStmt;
 import com.raceguard.model.AccessType;
 
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class AnalyzerUtils {
+
     private AnalyzerUtils() {}
 
     private static final Set<String> MUTATING_COLLECTION_METHODS = Set.of(
@@ -53,51 +55,139 @@ public final class AnalyzerUtils {
     }
 
     public static AccessType classifyAccess(NameExpr nameExpr) {
+        String fieldName = nameExpr.getNameAsString();
+
         Optional<AssignExpr> assign = nameExpr.findAncestor(AssignExpr.class);
-        if (assign.isPresent() && assign.get().getTarget().toString().equals(nameExpr.getNameAsString())) {
-            return AccessType.WRITE;
+        if (assign.isPresent()
+                && assign.get().getTarget().toString().equals(fieldName)) {
+
+            AssignExpr a = assign.get();
+
+            switch (a.getOperator()) {
+                case PLUS:
+                case MINUS:
+                case MULTIPLY:
+                case DIVIDE:
+                    return AccessType.READ_MODIFY_WRITE;
+
+                case ASSIGN:
+                    boolean rhsReferencesField =
+                            a.getValue()
+                                    .findAll(NameExpr.class)
+                                    .stream()
+                                    .anyMatch(n -> n.getNameAsString().equals(fieldName));
+
+                    return rhsReferencesField
+                            ? AccessType.READ_MODIFY_WRITE
+                            : AccessType.WRITE;
+            }
         }
+
         Optional<UnaryExpr> unary = nameExpr.findAncestor(UnaryExpr.class);
         if (unary.isPresent()) {
             UnaryExpr.Operator op = unary.get().getOperator();
-            if (op == UnaryExpr.Operator.PREFIX_INCREMENT || op == UnaryExpr.Operator.POSTFIX_INCREMENT
-                    || op == UnaryExpr.Operator.PREFIX_DECREMENT || op == UnaryExpr.Operator.POSTFIX_DECREMENT) {
-                return AccessType.WRITE;
+
+            if (op == UnaryExpr.Operator.PREFIX_INCREMENT
+                    || op == UnaryExpr.Operator.POSTFIX_INCREMENT
+                    || op == UnaryExpr.Operator.PREFIX_DECREMENT
+                    || op == UnaryExpr.Operator.POSTFIX_DECREMENT) {
+                return AccessType.READ_MODIFY_WRITE;
             }
         }
+
         Optional<MethodCallExpr> call = nameExpr.findAncestor(MethodCallExpr.class);
-        if (call.isPresent() && call.get().getScope().map(s -> s.toString().equals(nameExpr.getNameAsString())).orElse(false)) {
+        if (call.isPresent()
+                && call.get().getScope()
+                .map(s -> s.toString().equals(fieldName))
+                .orElse(false)) {
+
             String calledMethod = call.get().getNameAsString();
+
             if (MUTATING_COLLECTION_METHODS.contains(calledMethod)) {
-                return AccessType.WRITE;
+                return AccessType.READ_MODIFY_WRITE;
             }
         }
+
         return AccessType.READ;
     }
 
     /** Same idea as classifyAccess, generalized to a FieldAccessExpr like `gameState.phase`. */
     public static AccessType classifyMemberAccess(FieldAccessExpr fae) {
-        String faeText = fae.toString();
+        String fieldText = fae.toString();
 
+        // Assignment handling
         Optional<AssignExpr> assign = fae.findAncestor(AssignExpr.class);
-        if (assign.isPresent() && assign.get().getTarget().toString().equals(faeText)) {
-            return AccessType.WRITE;
+        if (assign.isPresent()
+                && assign.get().getTarget().toString().equals(fieldText)) {
+
+            AssignExpr a = assign.get();
+
+            switch (a.getOperator()) {
+
+                // += -= *= /= etc.
+                case PLUS:
+                case MINUS:
+                case MULTIPLY:
+                case DIVIDE:
+                case BINARY_AND:
+                case BINARY_OR:
+                case XOR:
+                case REMAINDER:
+                case LEFT_SHIFT:
+                case SIGNED_RIGHT_SHIFT:
+                case UNSIGNED_RIGHT_SHIFT:
+                    return AccessType.READ_MODIFY_WRITE;
+
+                // Plain assignment (=)
+                case ASSIGN:
+                    boolean rhsReferencesField = false;
+
+                    // Check field accesses
+                    rhsReferencesField |= a.getValue()
+                            .findAll(FieldAccessExpr.class)
+                            .stream()
+                            .anyMatch(f -> f.toString().equals(fieldText));
+
+                    // Check simple names too (covers cases like this.counter = counter + 1)
+                    rhsReferencesField |= a.getValue()
+                            .findAll(NameExpr.class)
+                            .stream()
+                            .anyMatch(n -> n.getNameAsString()
+                                    .equals(fae.getNameAsString()));
+
+                    return rhsReferencesField
+                            ? AccessType.READ_MODIFY_WRITE
+                            : AccessType.WRITE;
+            }
         }
+
+        // ++ / --
         Optional<UnaryExpr> unary = fae.findAncestor(UnaryExpr.class);
-        if (unary.isPresent() && unary.get().getExpression().toString().equals(faeText)) {
+        if (unary.isPresent()) {
             UnaryExpr.Operator op = unary.get().getOperator();
-            if (op == UnaryExpr.Operator.PREFIX_INCREMENT || op == UnaryExpr.Operator.POSTFIX_INCREMENT
-                    || op == UnaryExpr.Operator.PREFIX_DECREMENT || op == UnaryExpr.Operator.POSTFIX_DECREMENT) {
-                return AccessType.WRITE;
+
+            if (op == UnaryExpr.Operator.PREFIX_INCREMENT
+                    || op == UnaryExpr.Operator.POSTFIX_INCREMENT
+                    || op == UnaryExpr.Operator.PREFIX_DECREMENT
+                    || op == UnaryExpr.Operator.POSTFIX_DECREMENT) {
+                return AccessType.READ_MODIFY_WRITE;
             }
         }
+
+        // Mutating collection methods
         Optional<MethodCallExpr> call = fae.findAncestor(MethodCallExpr.class);
-        if (call.isPresent() && call.get().getScope().map(s -> s.toString().equals(faeText)).orElse(false)) {
-            String calledMethod = call.get().getNameAsString();
-            if (MUTATING_COLLECTION_METHODS.contains(calledMethod)) {
-                return AccessType.WRITE;
+        if (call.isPresent()
+                && call.get().getScope()
+                .map(s -> s.toString().equals(fieldText))
+                .orElse(false)) {
+
+            String method = call.get().getNameAsString();
+
+            if (MUTATING_COLLECTION_METHODS.contains(method)) {
+                return AccessType.READ_MODIFY_WRITE;
             }
         }
+
         return AccessType.READ;
     }
 
@@ -108,5 +198,38 @@ public final class AnalyzerUtils {
         if (Set.of("int", "long", "double", "float", "boolean", "short", "byte", "char",
                 "Integer", "Long", "Double", "Float", "Boolean").contains(type)) return "PRIMITIVE";
         return "OBJECT_REFERENCE";
+    }
+
+    public static String inferOperation(Node node) {
+
+        Optional<MethodCallExpr> call =
+                node.findAncestor(MethodCallExpr.class);
+
+        if (call.isPresent()) {
+            return call.get().getNameAsString();
+        }
+
+        Optional<ForEachStmt> foreach =
+                node.findAncestor(ForEachStmt.class);
+
+        if (foreach.isPresent()) {
+            return "iterate";
+        }
+
+        Optional<UnaryExpr> unary =
+                node.findAncestor(UnaryExpr.class);
+
+        if (unary.isPresent()) {
+            return unary.get().getOperator().name();
+        }
+
+        Optional<AssignExpr> assign =
+                node.findAncestor(AssignExpr.class);
+
+        if (assign.isPresent()) {
+            return assign.get().getOperator().name();
+        }
+
+        return "access";
     }
 }
