@@ -1594,7 +1594,8 @@
       "targetField": "EXPIRY",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to JWTServices.generateToken()"
+      "via": "call to JWTServices.generateToken()",
+      "line": 71
     },
     {
       "callerClass": "GameService",
@@ -1603,7 +1604,8 @@
       "targetField": "players",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameState.getPlayer()"
+      "via": "call to GameState.getPlayer()",
+      "line": 25
     },
     {
       "callerClass": "GameService",
@@ -1612,7 +1614,8 @@
       "targetField": "gridSize",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "direct field access"
+      "via": "direct field access",
+      "line": 33
     },
     {
       "callerClass": "GameService",
@@ -1621,7 +1624,8 @@
       "targetField": "gridSize",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "direct field access"
+      "via": "direct field access",
+      "line": 34
     },
     {
       "callerClass": "GameService",
@@ -1630,7 +1634,8 @@
       "targetField": "weaponsOnGround",
       "type": "READ_MODIFY_WRITE",
       "guardedBySynchronized": false,
-      "via": "call to GameState.removeWeapon()"
+      "via": "call to GameState.removeWeapon()",
+      "line": 52
     },
     {
       "callerClass": "GameService",
@@ -1639,7 +1644,8 @@
       "targetField": "weaponsOnGround",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "direct field access"
+      "via": "direct field access",
+      "line": 45
     },
     {
       "callerClass": "GameService",
@@ -1648,7 +1654,8 @@
       "targetField": "weaponsOnGround",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "direct field access"
+      "via": "direct field access",
+      "line": 46
     },
     {
       "callerClass": "GameService",
@@ -1657,7 +1664,8 @@
       "targetField": "weaponsOnGround",
       "type": "READ_MODIFY_WRITE",
       "guardedBySynchronized": false,
-      "via": "call to GameState.addWeapon()"
+      "via": "call to GameState.addWeapon()",
+      "line": 77
     },
     {
       "callerClass": "GameService",
@@ -1666,7 +1674,8 @@
       "targetField": "weaponsOnGround",
       "type": "READ_MODIFY_WRITE",
       "guardedBySynchronized": false,
-      "via": "call to GameState.addWeapon()"
+      "via": "call to GameState.addWeapon()",
+      "line": 82
     },
     {
       "callerClass": "GameService",
@@ -1675,7 +1684,8 @@
       "targetField": "weaponsOnGround",
       "type": "READ_MODIFY_WRITE",
       "guardedBySynchronized": false,
-      "via": "call to GameState.addWeapon()"
+      "via": "call to GameState.addWeapon()",
+      "line": 87
     },
     {
       "callerClass": "GameService",
@@ -1684,7 +1694,8 @@
       "targetField": "gridSize",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "direct field access"
+      "via": "direct field access",
+      "line": 75
     },
     {
       "callerClass": "GameService",
@@ -1693,7 +1704,8 @@
       "targetField": "gridSize",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "direct field access"
+      "via": "direct field access",
+      "line": 76
     },
     {
       "callerClass": "GameService",
@@ -1702,7 +1714,8 @@
       "targetField": "gridSize",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "direct field access"
+      "via": "direct field access",
+      "line": 80
     },
     {
       "callerClass": "GameService",
@@ -1711,7 +1724,8 @@
       "targetField": "gridSize",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "direct field access"
+      "via": "direct field access",
+      "line": 81
     },
     {
       "callerClass": "GameService",
@@ -1720,7 +1734,8 @@
       "targetField": "gridSize",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "direct field access"
+      "via": "direct field access",
+      "line": 85
     },
     {
       "callerClass": "GameService",
@@ -1729,7 +1744,8 @@
       "targetField": "gridSize",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "direct field access"
+      "via": "direct field access",
+      "line": 86
     },
     {
       "callerClass": "GameService",
@@ -1738,7 +1754,8 @@
       "targetField": "players",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameState.getPlayer()"
+      "via": "call to GameState.getPlayer()",
+      "line": 91
     },
     {
       "callerClass": "GameService",
@@ -1747,7 +1764,8 @@
       "targetField": "players",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameState.getAllPlayers()"
+      "via": "call to GameState.getAllPlayers()",
+      "line": 141
     },
     {
       "callerClass": "GameService",
@@ -1756,7 +1774,8 @@
       "targetField": "players",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameState.getAllPlayers()"
+      "via": "call to GameState.getAllPlayers()",
+      "line": 143
     },
     {
       "callerClass": "GameService",
@@ -1765,7 +1784,8 @@
       "targetField": "players",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameState.getAllPlayers()"
+      "via": "call to GameState.getAllPlayers()",
+      "line": 154
     },
     {
       "callerClass": "GameService",
@@ -1774,7 +1794,8 @@
       "targetField": "players",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameState.getAllPlayers()"
+      "via": "call to GameState.getAllPlayers()",
+      "line": 157
     },
     {
       "callerClass": "GameService",
@@ -1783,7 +1804,8 @@
       "targetField": "players",
       "type": "READ_MODIFY_WRITE",
       "guardedBySynchronized": false,
-      "via": "call to GameState.reset()"
+      "via": "call to GameState.reset()",
+      "line": 167
     },
     {
       "callerClass": "GameService",
@@ -1792,7 +1814,8 @@
       "targetField": "weaponsOnGround",
       "type": "READ_MODIFY_WRITE",
       "guardedBySynchronized": false,
-      "via": "call to GameState.reset()"
+      "via": "call to GameState.reset()",
+      "line": 167
     },
     {
       "callerClass": "GameService",
@@ -1801,7 +1824,8 @@
       "targetField": "phase",
       "type": "WRITE",
       "guardedBySynchronized": false,
-      "via": "call to GameState.reset()"
+      "via": "call to GameState.reset()",
+      "line": 167
     },
     {
       "callerClass": "GameService",
@@ -1810,7 +1834,8 @@
       "targetField": "phase",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "direct field access"
+      "via": "direct field access",
+      "line": 151
     },
     {
       "callerClass": "GameService",
@@ -1819,7 +1844,8 @@
       "targetField": "phase",
       "type": "WRITE",
       "guardedBySynchronized": false,
-      "via": "direct field access"
+      "via": "direct field access",
+      "line": 161
     },
     {
       "callerClass": "GameService",
@@ -1828,7 +1854,8 @@
       "targetField": "phase",
       "type": "WRITE",
       "guardedBySynchronized": false,
-      "via": "direct field access"
+      "via": "direct field access",
+      "line": 166
     },
     {
       "callerClass": "GameWebSocket",
@@ -1837,7 +1864,8 @@
       "targetField": "players",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameState.getPlayer()"
+      "via": "call to GameState.getPlayer()",
+      "line": 44
     },
     {
       "callerClass": "GameWebSocket",
@@ -1846,7 +1874,8 @@
       "targetField": "players",
       "type": "READ_MODIFY_WRITE",
       "guardedBySynchronized": false,
-      "via": "call to GameState.addPlayer()"
+      "via": "call to GameState.addPlayer()",
+      "line": 54
     },
     {
       "callerClass": "GameWebSocket",
@@ -1855,7 +1884,8 @@
       "targetField": "players",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameState.addPlayer()"
+      "via": "call to GameState.addPlayer()",
+      "line": 54
     },
     {
       "callerClass": "GameWebSocket",
@@ -1864,7 +1894,8 @@
       "targetField": "playersNeededToStart",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameState.addPlayer()"
+      "via": "call to GameState.addPlayer()",
+      "line": 54
     },
     {
       "callerClass": "GameWebSocket",
@@ -1873,7 +1904,8 @@
       "targetField": "phase",
       "type": "WRITE",
       "guardedBySynchronized": false,
-      "via": "call to GameState.addPlayer()"
+      "via": "call to GameState.addPlayer()",
+      "line": 54
     },
     {
       "callerClass": "GameWebSocket",
@@ -1882,7 +1914,8 @@
       "targetField": "players",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameState.getAllPlayers()"
+      "via": "call to GameState.getAllPlayers()",
+      "line": 55
     },
     {
       "callerClass": "GameWebSocket",
@@ -1891,7 +1924,8 @@
       "targetField": "gameState",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameService.spawnWeapons()"
+      "via": "call to GameService.spawnWeapons()",
+      "line": 56
     },
     {
       "callerClass": "GameWebSocket",
@@ -1900,7 +1934,8 @@
       "targetField": "gameState",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameService.spawnWeapons()"
+      "via": "call to GameService.spawnWeapons()",
+      "line": 56
     },
     {
       "callerClass": "GameWebSocket",
@@ -1909,7 +1944,8 @@
       "targetField": "gameState",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameService.spawnWeapons()"
+      "via": "call to GameService.spawnWeapons()",
+      "line": 56
     },
     {
       "callerClass": "GameWebSocket",
@@ -1918,7 +1954,8 @@
       "targetField": "gameState",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameService.spawnWeapons()"
+      "via": "call to GameService.spawnWeapons()",
+      "line": 56
     },
     {
       "callerClass": "GameWebSocket",
@@ -1927,7 +1964,8 @@
       "targetField": "gameState",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameService.spawnWeapons()"
+      "via": "call to GameService.spawnWeapons()",
+      "line": 56
     },
     {
       "callerClass": "GameWebSocket",
@@ -1936,7 +1974,8 @@
       "targetField": "gameState",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameService.spawnWeapons()"
+      "via": "call to GameService.spawnWeapons()",
+      "line": 56
     },
     {
       "callerClass": "GameWebSocket",
@@ -1945,7 +1984,8 @@
       "targetField": "gameState",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameService.spawnWeapons()"
+      "via": "call to GameService.spawnWeapons()",
+      "line": 56
     },
     {
       "callerClass": "GameWebSocket",
@@ -1954,7 +1994,8 @@
       "targetField": "gameState",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameService.spawnWeapons()"
+      "via": "call to GameService.spawnWeapons()",
+      "line": 56
     },
     {
       "callerClass": "GameWebSocket",
@@ -1963,7 +2004,8 @@
       "targetField": "gameState",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameService.spawnWeapons()"
+      "via": "call to GameService.spawnWeapons()",
+      "line": 56
     },
     {
       "callerClass": "GameWebSocket",
@@ -1972,7 +2014,8 @@
       "targetField": "gameState",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameService.movePlayer()"
+      "via": "call to GameService.movePlayer()",
+      "line": 65
     },
     {
       "callerClass": "GameWebSocket",
@@ -1981,7 +2024,8 @@
       "targetField": "gameState",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameService.movePlayer()"
+      "via": "call to GameService.movePlayer()",
+      "line": 65
     },
     {
       "callerClass": "GameWebSocket",
@@ -1990,7 +2034,8 @@
       "targetField": "gameState",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameService.movePlayer()"
+      "via": "call to GameService.movePlayer()",
+      "line": 65
     },
     {
       "callerClass": "GameWebSocket",
@@ -1999,7 +2044,8 @@
       "targetField": "gameState",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameService.attack()"
+      "via": "call to GameService.attack()",
+      "line": 72
     },
     {
       "callerClass": "GameWebSocket",
@@ -2008,7 +2054,8 @@
       "targetField": "gridSize",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "direct field access"
+      "via": "direct field access",
+      "line": 51
     },
     {
       "callerClass": "GameWebSocket",
@@ -2017,7 +2064,8 @@
       "targetField": "gridSize",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "direct field access"
+      "via": "direct field access",
+      "line": 52
     },
     {
       "callerClass": "GameWebSocket",
@@ -2026,7 +2074,8 @@
       "targetField": "players",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameState.getAllPlayers()"
+      "via": "call to GameState.getAllPlayers()",
+      "line": 89
     },
     {
       "callerClass": "GameWebSocket",
@@ -2035,7 +2084,8 @@
       "targetField": "players",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameState.getAllPlayers()"
+      "via": "call to GameState.getAllPlayers()",
+      "line": 90
     },
     {
       "callerClass": "GameWebSocket",
@@ -2044,16 +2094,8 @@
       "targetField": "players",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameState.getAllPlayers()"
-    },
-    {
-      "callerClass": "GameWebSocket",
-      "callerMethod": "afterConnectionClosed",
-      "targetClass": "GameState",
-      "targetField": "players",
-      "type": "READ_MODIFY_WRITE",
-      "guardedBySynchronized": false,
-      "via": "call to GameState.removePlayer()"
+      "via": "call to GameState.getAllPlayers()",
+      "line": 91
     },
     {
       "callerClass": "GameWebSocket",
@@ -2062,7 +2104,18 @@
       "targetField": "players",
       "type": "READ_MODIFY_WRITE",
       "guardedBySynchronized": false,
-      "via": "call to GameState.removePlayer()"
+      "via": "call to GameState.removePlayer()",
+      "line": 98
+    },
+    {
+      "callerClass": "GameWebSocket",
+      "callerMethod": "afterConnectionClosed",
+      "targetClass": "GameState",
+      "targetField": "players",
+      "type": "READ_MODIFY_WRITE",
+      "guardedBySynchronized": false,
+      "via": "call to GameState.removePlayer()",
+      "line": 98
     },
     {
       "callerClass": "GameLoop",
@@ -2071,7 +2124,8 @@
       "targetField": "players",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameState.getAllPlayers()"
+      "via": "call to GameState.getAllPlayers()",
+      "line": 30
     },
     {
       "callerClass": "GameLoop",
@@ -2080,7 +2134,8 @@
       "targetField": "players",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameState.getAllPlayers()"
+      "via": "call to GameState.getAllPlayers()",
+      "line": 32
     },
     {
       "callerClass": "GameLoop",
@@ -2089,7 +2144,8 @@
       "targetField": "gameState",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameService.checkWinner()"
+      "via": "call to GameService.checkWinner()",
+      "line": 42
     },
     {
       "callerClass": "GameLoop",
@@ -2098,7 +2154,8 @@
       "targetField": "gameState",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameService.checkWinner()"
+      "via": "call to GameService.checkWinner()",
+      "line": 42
     },
     {
       "callerClass": "GameLoop",
@@ -2107,7 +2164,8 @@
       "targetField": "gameState",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameService.checkWinner()"
+      "via": "call to GameService.checkWinner()",
+      "line": 42
     },
     {
       "callerClass": "GameLoop",
@@ -2116,7 +2174,8 @@
       "targetField": "gameState",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameService.checkWinner()"
+      "via": "call to GameService.checkWinner()",
+      "line": 42
     },
     {
       "callerClass": "GameLoop",
@@ -2125,7 +2184,8 @@
       "targetField": "gameState",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameService.checkWinner()"
+      "via": "call to GameService.checkWinner()",
+      "line": 42
     },
     {
       "callerClass": "GameLoop",
@@ -2134,7 +2194,8 @@
       "targetField": "gameState",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameService.checkWinner()"
+      "via": "call to GameService.checkWinner()",
+      "line": 42
     },
     {
       "callerClass": "GameLoop",
@@ -2143,7 +2204,8 @@
       "targetField": "players",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameState.getAllPlayers()"
+      "via": "call to GameState.getAllPlayers()",
+      "line": 47
     },
     {
       "callerClass": "GameLoop",
@@ -2152,7 +2214,8 @@
       "targetField": "players",
       "type": "READ_MODIFY_WRITE",
       "guardedBySynchronized": false,
-      "via": "call to GameState.reset()"
+      "via": "call to GameState.reset()",
+      "line": 56
     },
     {
       "callerClass": "GameLoop",
@@ -2161,7 +2224,8 @@
       "targetField": "weaponsOnGround",
       "type": "READ_MODIFY_WRITE",
       "guardedBySynchronized": false,
-      "via": "call to GameState.reset()"
+      "via": "call to GameState.reset()",
+      "line": 56
     },
     {
       "callerClass": "GameLoop",
@@ -2170,7 +2234,8 @@
       "targetField": "phase",
       "type": "WRITE",
       "guardedBySynchronized": false,
-      "via": "call to GameState.reset()"
+      "via": "call to GameState.reset()",
+      "line": 56
     },
     {
       "callerClass": "GameLoop",
@@ -2179,7 +2244,8 @@
       "targetField": "phase",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "direct field access"
+      "via": "direct field access",
+      "line": 26
     },
     {
       "callerClass": "GameLoop",
@@ -2188,7 +2254,8 @@
       "targetField": "players",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameState.getAllPlayers()"
+      "via": "call to GameState.getAllPlayers()",
+      "line": 64
     },
     {
       "callerClass": "GameLoop",
@@ -2197,7 +2264,8 @@
       "targetField": "players",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "call to GameState.getAllPlayers()"
+      "via": "call to GameState.getAllPlayers()",
+      "line": 67
     },
     {
       "callerClass": "GameLoop",
@@ -2206,7 +2274,8 @@
       "targetField": "weaponsOnGround",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "direct field access"
+      "via": "direct field access",
+      "line": 79
     },
     {
       "callerClass": "GameLoop",
@@ -2215,7 +2284,8 @@
       "targetField": "weaponsOnGround",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "direct field access"
+      "via": "direct field access",
+      "line": 80
     },
     {
       "callerClass": "GameLoop",
@@ -2224,7 +2294,8 @@
       "targetField": "weaponsOnGround",
       "type": "READ",
       "guardedBySynchronized": false,
-      "via": "direct field access"
+      "via": "direct field access",
+      "line": 90
     }
   ],
   "projectRisks": [
@@ -2411,6 +2482,229 @@
           "approach": "Make the field final and fully construct the object before publishing it",
           "pros": "Strongest guarantee; safe publication is automatic per the Java Memory Model",
           "cons": "Requires the object to be fully immutable or constructed in one shot, which isn\u0027t always possible"
+        }
+      ]
+    },
+    {
+      "field": "weaponsOnGround",
+      "owningClass": "GameState",
+      "fieldType": "List\u003cWeapon\u003e",
+      "writers": [
+        "GameService.checkWeaponPickup()"
+      ],
+      "readers": [
+        "GameService.checkWeaponPickup()"
+      ],
+      "unguardedWriters": [],
+      "severity": "HIGH",
+      "signalCount": 3,
+      "reasons": [
+        "read via direct field access (line 46) followed by a mutation via call to GameState.removeWeapon() (line 52)",
+        "both touch \u0027GameState.weaponsOnGround\u0027 across a call boundary",
+        "neither access is synchronized"
+      ],
+      "summary": "Method \u0027GameService.checkWeaponPickup()\u0027 reads \u0027GameState.weaponsOnGround\u0027 (direct field access) and shortly after mutates it (call to GameState.removeWeapon()), without synchronization. Another thread can change the field in the gap between the two, invalidating whatever the read observed.",
+      "pattern": "CHECK_THEN_ACT",
+      "fixSuggestions": [
+        {
+          "approach": "Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act",
+          "pros": "Atomic check-and-act in a single call, no external locking needed",
+          "cons": "Only available on concurrent collection types; requires switching the field\u0027s type"
+        },
+        {
+          "approach": "Wrap the check and the act in a single synchronized block",
+          "pros": "Correct regardless of the underlying type",
+          "cons": "Blocking; every place that reads or writes this state must go through the same lock"
+        },
+        {
+          "approach": "Use AtomicReference.compareAndSet() for the check-then-act",
+          "pros": "Lock-free",
+          "cons": "Only applies when the check and act reduce to a single reference comparison-and-swap"
+        }
+      ]
+    },
+    {
+      "field": "players",
+      "owningClass": "GameState",
+      "fieldType": "ConcurrentHashMap\u003cString,GamePlayer\u003e",
+      "writers": [
+        "GameService.checkWinner()"
+      ],
+      "readers": [
+        "GameService.checkWinner()"
+      ],
+      "unguardedWriters": [],
+      "severity": "HIGH",
+      "signalCount": 3,
+      "reasons": [
+        "read via call to GameState.getAllPlayers() (line 157) followed by a mutation via call to GameState.reset() (line 167)",
+        "both touch \u0027GameState.players\u0027 across a call boundary",
+        "neither access is synchronized"
+      ],
+      "summary": "Method \u0027GameService.checkWinner()\u0027 reads \u0027GameState.players\u0027 (call to GameState.getAllPlayers()) and shortly after mutates it (call to GameState.reset()), without synchronization. Another thread can change the field in the gap between the two, invalidating whatever the read observed.",
+      "pattern": "CHECK_THEN_ACT",
+      "fixSuggestions": [
+        {
+          "approach": "Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act",
+          "pros": "Atomic check-and-act in a single call, no external locking needed",
+          "cons": "Only available on concurrent collection types; requires switching the field\u0027s type"
+        },
+        {
+          "approach": "Wrap the check and the act in a single synchronized block",
+          "pros": "Correct regardless of the underlying type",
+          "cons": "Blocking; every place that reads or writes this state must go through the same lock"
+        },
+        {
+          "approach": "Use AtomicReference.compareAndSet() for the check-then-act",
+          "pros": "Lock-free",
+          "cons": "Only applies when the check and act reduce to a single reference comparison-and-swap"
+        }
+      ]
+    },
+    {
+      "field": "phase",
+      "owningClass": "GameState",
+      "fieldType": "GamePhase",
+      "writers": [
+        "GameService.checkWinner()"
+      ],
+      "readers": [
+        "GameService.checkWinner()"
+      ],
+      "unguardedWriters": [],
+      "severity": "HIGH",
+      "signalCount": 3,
+      "reasons": [
+        "read via direct field access (line 151) followed by a mutation via direct field access (line 161)",
+        "both touch \u0027GameState.phase\u0027 across a call boundary",
+        "neither access is synchronized"
+      ],
+      "summary": "Method \u0027GameService.checkWinner()\u0027 reads \u0027GameState.phase\u0027 (direct field access) and shortly after mutates it (direct field access), without synchronization. Another thread can change the field in the gap between the two, invalidating whatever the read observed.",
+      "pattern": "CHECK_THEN_ACT",
+      "fixSuggestions": [
+        {
+          "approach": "Wrap the check and the act in a single synchronized block",
+          "pros": "Correct regardless of the underlying type",
+          "cons": "Blocking; every place that reads or writes this state must go through the same lock"
+        },
+        {
+          "approach": "Use AtomicReference.compareAndSet() for the check-then-act",
+          "pros": "Lock-free",
+          "cons": "Only applies when the check and act reduce to a single reference comparison-and-swap"
+        }
+      ]
+    },
+    {
+      "field": "players",
+      "owningClass": "GameState",
+      "fieldType": "ConcurrentHashMap\u003cString,GamePlayer\u003e",
+      "writers": [
+        "GameWebSocket.handleTextMessage()"
+      ],
+      "readers": [
+        "GameWebSocket.handleTextMessage()"
+      ],
+      "unguardedWriters": [],
+      "severity": "HIGH",
+      "signalCount": 3,
+      "reasons": [
+        "read via call to GameState.getPlayer() (line 44) followed by a mutation via call to GameState.addPlayer() (line 54)",
+        "both touch \u0027GameState.players\u0027 across a call boundary",
+        "neither access is synchronized"
+      ],
+      "summary": "Method \u0027GameWebSocket.handleTextMessage()\u0027 reads \u0027GameState.players\u0027 (call to GameState.getPlayer()) and shortly after mutates it (call to GameState.addPlayer()), without synchronization. Another thread can change the field in the gap between the two, invalidating whatever the read observed.",
+      "pattern": "CHECK_THEN_ACT",
+      "fixSuggestions": [
+        {
+          "approach": "Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act",
+          "pros": "Atomic check-and-act in a single call, no external locking needed",
+          "cons": "Only available on concurrent collection types; requires switching the field\u0027s type"
+        },
+        {
+          "approach": "Wrap the check and the act in a single synchronized block",
+          "pros": "Correct regardless of the underlying type",
+          "cons": "Blocking; every place that reads or writes this state must go through the same lock"
+        },
+        {
+          "approach": "Use AtomicReference.compareAndSet() for the check-then-act",
+          "pros": "Lock-free",
+          "cons": "Only applies when the check and act reduce to a single reference comparison-and-swap"
+        }
+      ]
+    },
+    {
+      "field": "players",
+      "owningClass": "GameState",
+      "fieldType": "ConcurrentHashMap\u003cString,GamePlayer\u003e",
+      "writers": [
+        "GameWebSocket.afterConnectionClosed()"
+      ],
+      "readers": [
+        "GameWebSocket.afterConnectionClosed()"
+      ],
+      "unguardedWriters": [],
+      "severity": "HIGH",
+      "signalCount": 3,
+      "reasons": [
+        "read via call to GameState.getAllPlayers() (line 91) followed by a mutation via call to GameState.removePlayer() (line 98)",
+        "both touch \u0027GameState.players\u0027 across a call boundary",
+        "neither access is synchronized"
+      ],
+      "summary": "Method \u0027GameWebSocket.afterConnectionClosed()\u0027 reads \u0027GameState.players\u0027 (call to GameState.getAllPlayers()) and shortly after mutates it (call to GameState.removePlayer()), without synchronization. Another thread can change the field in the gap between the two, invalidating whatever the read observed.",
+      "pattern": "CHECK_THEN_ACT",
+      "fixSuggestions": [
+        {
+          "approach": "Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act",
+          "pros": "Atomic check-and-act in a single call, no external locking needed",
+          "cons": "Only available on concurrent collection types; requires switching the field\u0027s type"
+        },
+        {
+          "approach": "Wrap the check and the act in a single synchronized block",
+          "pros": "Correct regardless of the underlying type",
+          "cons": "Blocking; every place that reads or writes this state must go through the same lock"
+        },
+        {
+          "approach": "Use AtomicReference.compareAndSet() for the check-then-act",
+          "pros": "Lock-free",
+          "cons": "Only applies when the check and act reduce to a single reference comparison-and-swap"
+        }
+      ]
+    },
+    {
+      "field": "players",
+      "owningClass": "GameState",
+      "fieldType": "ConcurrentHashMap\u003cString,GamePlayer\u003e",
+      "writers": [
+        "GameLoop.tick()"
+      ],
+      "readers": [
+        "GameLoop.tick()"
+      ],
+      "unguardedWriters": [],
+      "severity": "HIGH",
+      "signalCount": 3,
+      "reasons": [
+        "read via call to GameState.getAllPlayers() (line 47) followed by a mutation via call to GameState.reset() (line 56)",
+        "both touch \u0027GameState.players\u0027 across a call boundary",
+        "neither access is synchronized"
+      ],
+      "summary": "Method \u0027GameLoop.tick()\u0027 reads \u0027GameState.players\u0027 (call to GameState.getAllPlayers()) and shortly after mutates it (call to GameState.reset()), without synchronization. Another thread can change the field in the gap between the two, invalidating whatever the read observed.",
+      "pattern": "CHECK_THEN_ACT",
+      "fixSuggestions": [
+        {
+          "approach": "Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act",
+          "pros": "Atomic check-and-act in a single call, no external locking needed",
+          "cons": "Only available on concurrent collection types; requires switching the field\u0027s type"
+        },
+        {
+          "approach": "Wrap the check and the act in a single synchronized block",
+          "pros": "Correct regardless of the underlying type",
+          "cons": "Blocking; every place that reads or writes this state must go through the same lock"
+        },
+        {
+          "approach": "Use AtomicReference.compareAndSet() for the check-then-act",
+          "pros": "Lock-free",
+          "cons": "Only applies when the check and act reduce to a single reference comparison-and-swap"
         }
       ]
     },

@@ -96,6 +96,10 @@ public final class RiskEngine {
         );
 
         risks.addAll(
+                detectCrossClassCheckThenAct(crossClassAccesses, byClassName)
+        );
+
+        risks.addAll(
                 LazyInitDetector.detect(units)
         );
 
@@ -552,6 +556,91 @@ public final class RiskEngine {
         }
 
         return s;
+    }
+
+    /**
+     * Same idea as detectCheckThenAct, but generalized across a call boundary
+     * AND driven by AccessType (READ -> WRITE/READ_MODIFY_WRITE) instead of a
+     * hardcoded operation-name whitelist. This is what catches
+     * GameService.checkWeaponPickup(): a direct read of gameState.weaponsOnGround
+     * (size()/get()) followed by a call to gameState.removeWeapon(w), which
+     * itself performs a READ_MODIFY_WRITE on that same field one hop away.
+     * The original detectCheckThenAct only sees same-class access sequences,
+     * so it can't see this — this method fills that gap using the
+     * crossClassAccesses list, which already carries the correct AccessType
+     * for the target field regardless of which class actually touches it.
+     */
+    private static List<ProjectRisk> detectCrossClassCheckThenAct(
+            List<CrossClassAccess> crossClassAccesses,
+            Map<String, ParsedUnit> byClassName
+    ) {
+        List<ProjectRisk> risks = new ArrayList<>();
+        Set<String> reported = new HashSet<>();
+
+        // Group touches by (caller class+method, target class+field) so we only
+        // compare accesses that plausibly belong to the same check-then-act sequence.
+        Map<String, List<CrossClassAccess>> grouped = new LinkedHashMap<>();
+        for (CrossClassAccess cca : crossClassAccesses) {
+            if (cca.line <= 0) continue; // couldn't determine source position, skip rather than guess order
+            String key = cca.callerClass + ":" + cca.callerMethod + ":" + cca.targetClass + ":" + cca.targetField;
+            grouped.computeIfAbsent(key, k -> new ArrayList<>()).add(cca);
+        }
+
+        for (List<CrossClassAccess> touches : grouped.values()) {
+            touches.sort(Comparator.comparingInt(a -> a.line));
+
+            for (int i = 0; i < touches.size() - 1; i++) {
+                CrossClassAccess first = touches.get(i);
+                CrossClassAccess second = touches.get(i + 1);
+
+                if (first.type != AccessType.READ) continue;
+                if (second.type != AccessType.WRITE && second.type != AccessType.READ_MODIFY_WRITE) continue;
+                if (first.guardedBySynchronized || second.guardedBySynchronized) continue;
+                if (second.line - first.line > 25) continue; // keep it scoped to a plausible single check-then-act window
+
+                String key = first.callerClass + ":" + first.callerMethod + ":" + first.targetClass + ":" + first.targetField;
+                if (!reported.add(key)) continue;
+
+                List<String> reasons = List.of(
+                        "read via " + first.via + " (line " + first.line + ") followed by a mutation via "
+                                + second.via + " (line " + second.line + ")",
+                        "both touch '" + first.targetClass + "." + first.targetField + "' across a call boundary",
+                        "neither access is synchronized"
+                );
+
+                String summary = "Method '" + first.callerClass + "." + first.callerMethod + "()' reads '"
+                        + first.targetClass + "." + first.targetField + "' (" + first.via + ") and shortly after "
+                        + "mutates it (" + second.via + "), without synchronization. Another thread can change "
+                        + "the field in the gap between the two, invalidating whatever the read observed.";
+
+                risks.add(
+                        buildRisk(
+                                "CHECK_THEN_ACT",
+                                first.targetClass,
+                                first.targetField,
+                                resolveFieldType(byClassName, first.targetClass, first.targetField),
+                                List.of(first.callerClass + "." + first.callerMethod + "()"),
+                                List.of(first.callerClass + "." + first.callerMethod + "()"),
+                                List.of(),
+                                "HIGH",
+                                reasons.size(),
+                                reasons,
+                                summary
+                        )
+                );
+            }
+        }
+
+        return risks;
+    }
+
+    private static String resolveFieldType(Map<String, ParsedUnit> byClassName, String className, String fieldName) {
+        ParsedUnit u = byClassName.get(className);
+        if (u == null) return "unknown";
+        for (FieldInfo f : u.graph.fields) {
+            if (f.name.equals(fieldName)) return f.type;
+        }
+        return "unknown";
     }
 
     private static List<ProjectRisk> detectCheckThenAct(

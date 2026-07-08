@@ -16,4 +16,6 @@ public class CrossClassAccess {
 
     public String via;
 
+    public int line;
+
 }

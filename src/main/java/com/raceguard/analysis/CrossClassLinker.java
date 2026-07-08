@@ -73,6 +73,7 @@ public final class CrossClassLinker {
                                     // guarded if EITHER the call site or the target method itself synchronizes
                                     cca.guardedBySynchronized = insideSync || fa.guardedBySynchronized;
                                     cca.via = "call to " + targetClass + "." + calledMethodName + "()";
+                                    cca.line = call.getBegin().map(p -> p.line).orElse(-1);
                                     crossClassAccesses.add(cca);
                                 }
                             }
@@ -105,6 +106,7 @@ public final class CrossClassLinker {
                         cca.type = access;
                         cca.guardedBySynchronized = insideSync;
                         cca.via = "direct field access";
+                        cca.line = fae.getBegin().map(p -> p.line).orElse(-1);
                         crossClassAccesses.add(cca);
                     });
                 });
