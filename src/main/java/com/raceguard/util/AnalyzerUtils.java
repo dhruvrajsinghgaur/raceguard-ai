@@ -68,6 +68,13 @@ public final class AnalyzerUtils {
                 case MINUS:
                 case MULTIPLY:
                 case DIVIDE:
+                case BINARY_AND:
+                case BINARY_OR:
+                case XOR:
+                case REMAINDER:
+                case LEFT_SHIFT:
+                case SIGNED_RIGHT_SHIFT:
+                case UNSIGNED_RIGHT_SHIFT:
                     return AccessType.READ_MODIFY_WRITE;
 
                 case ASSIGN:

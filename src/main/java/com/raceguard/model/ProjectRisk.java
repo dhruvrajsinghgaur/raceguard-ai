@@ -26,4 +26,6 @@ public class ProjectRisk {
 
     public String pattern;
 
+    public List<FixSuggestion> fixSuggestions;
+
 }

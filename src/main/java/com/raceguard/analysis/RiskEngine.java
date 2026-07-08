@@ -95,6 +95,22 @@ public final class RiskEngine {
                 detectCheckThenAct(units)
         );
 
+        risks.addAll(
+                LazyInitDetector.detect(units)
+        );
+
+        risks.addAll(
+                DeadlockDetector.detect(units)
+        );
+
+        // Attach fix suggestions to any risk that doesn't already have them
+        // (LazyInitDetector and DeadlockDetector set their own inline).
+        for (ProjectRisk risk : risks) {
+            if (risk.fixSuggestions == null) {
+                risk.fixSuggestions = FixSuggestionEngine.suggest(risk.pattern, risk.fieldType);
+            }
+        }
+
         return risks;
     }
 

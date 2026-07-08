@@ -1,3 +1,5 @@
+com/raceguard/analysis/DeadlockDetector$LockEdge.class
+com/raceguard/model/FixSuggestion.class
 com/raceguard/model/ProjectGraph.class
 com/raceguard/util/AnalyzerUtils$1.class
 com/raceguard/model/ProjectRisk.class
@@ -7,6 +9,7 @@ com/raceguard/util/TriggerDetector.class
 com/raceguard/model/ClassGraph.class
 com/raceguard/model/FieldAccessSummary.class
 com/raceguard/analysis/RiskEngine.class
+com/raceguard/analysis/LazyInitDetector.class
 com/raceguard/model/FieldInfo.class
 com/raceguard/model/AccessType.class
 com/raceguard/parser/ClassGraphBuilder.class
@@ -14,5 +17,7 @@ com/raceguard/model/CrossClassAccess.class
 com/raceguard/util/AnalyzerUtils.class
 com/raceguard/model/FieldAccess.class
 com/raceguard/ProjectAnalyzer.class
+com/raceguard/analysis/FixSuggestionEngine.class
 com/raceguard/model/ParsedUnit.class
 com/raceguard/analysis/CrossClassLinker.class
+com/raceguard/analysis/DeadlockDetector.class

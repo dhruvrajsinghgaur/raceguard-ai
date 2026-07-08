@@ -1,5 +1,8 @@
 /home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/ProjectAnalyzer.java
 /home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/analysis/CrossClassLinker.java
+/home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/analysis/DeadlockDetector.java
+/home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/analysis/FixSuggestionEngine.java
+/home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/analysis/LazyInitDetector.java
 /home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/analysis/RiskEngine.java
 /home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/model/AccessType.java
 /home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/model/ClassGraph.java
@@ -7,6 +10,7 @@
 /home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/model/FieldAccess.java
 /home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/model/FieldAccessSummary.java
 /home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/model/FieldInfo.java
+/home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/model/FixSuggestion.java
 /home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/model/MethodInfo.java
 /home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/model/ParsedUnit.java
 /home/dhruv/Programming/AMD/RaceGuard_AI/src/main/java/com/raceguard/model/ProjectGraph.java
