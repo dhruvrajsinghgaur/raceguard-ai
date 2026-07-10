@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RaceGuard AI — Concurrency Validation Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #10141A;
+    --surface: #171D26;
+    --surface-2: #1D2530;
+    --border: #2A323E;
+    --text: #E7ECF2;
+    --text-muted: #8B96A5;
+    --t1: #E8A33D;
+    --t2: #3DC4B0;
+    --high: #E2574C;
+    --medium: #E8A33D;
+    --fix: #4CAF7D;
+    --font-display: 'IBM Plex Sans', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'SF Mono', Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-display);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--t2); }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 48px 24px 96px; }
+
+  header.hero {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 40px;
+    margin-bottom: 40px;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--t2);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 700;
+    margin: 0 0 12px;
+    letter-spacing: -0.02em;
+  }
+
+  .tagline {
+    color: var(--text-muted);
+    font-size: 17px;
+    max-width: 640px;
+    margin: 0 0 32px;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .stat {
+    background: var(--surface);
+    padding: 20px;
+  }
+
+  .stat-num {
+    font-family: var(--font-mono);
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .stat-num.high { color: var(--high); }
+  .stat-num.medium { color: var(--medium); }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .pipeline-note {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 24px;
+    font-family: var(--font-mono);
+  }
+
+  .pipeline-note b { color: var(--text); font-weight: 500; }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+
+  .filter-btn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 7px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .filter-btn:hover { border-color: var(--t2); color: var(--text); }
+  .filter-btn.active { background: var(--t2); border-color: var(--t2); color: #0A1210; }
+
+  .cards { display: flex; flex-direction: column; gap: 20px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--border);
+    border-radius: 10px;
+    padding: 24px 28px;
+  }
+
+  .card.sev-high { border-left-color: var(--high); }
+  .card.sev-medium { border-left-color: var(--medium); }
+
+  .card.hidden { display: none; }
+
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .card-head-left { display: flex; gap: 8px; }
+
+  .sev-badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--surface-2);
+  }
+
+  .sev-high .sev-badge { color: var(--high); }
+  .sev-medium .sev-badge { color: var(--medium); }
+
+  .pattern-badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    color: var(--text-muted);
+  }
+
+  .card-title {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .class-name { color: var(--t2); }
+  .dot { color: var(--text-muted); }
+  .field-name { color: var(--text); }
+
+  .card-explanation {
+    color: var(--text);
+    font-size: 15px;
+    margin: 0 0 16px;
+  }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+
+  .chip {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin: 20px 0 10px;
+  }
+
+  .trace-ladder {
+    background: #0B0E13;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+
+  .trace-row {
+    display: grid;
+    grid-template-columns: 4px 34px 1fr;
+    align-items: center;
+    gap: 12px;
+    padding: 5px 0;
+  }
+
+  .trace-rail { width: 4px; height: 100%; border-radius: 2px; align-self: stretch; }
+  .lane-t1 .trace-rail { background: var(--t1); }
+  .lane-t2 .trace-rail { background: var(--t2); }
+  .lane-none .trace-rail { background: var(--border); }
+
+  .trace-lane {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .lane-t1 .trace-lane { color: var(--t1); }
+  .lane-t2 .trace-lane { color: var(--t2); }
+  .lane-none .trace-lane { color: var(--text-muted); }
+
+  .trace-text {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text);
+    background: none;
+  }
+
+  .trace-empty { color: var(--text-muted); font-size: 13px; font-style: italic; }
+
+  .fix-rationale {
+    font-size: 14px;
+    color: var(--text);
+    background: rgba(76, 175, 125, 0.08);
+    border: 1px solid rgba(76, 175, 125, 0.3);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 0 0 12px;
+  }
+
+  .fix-options { display: flex; flex-direction: column; gap: 8px; }
+
+  .fix-option {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .fix-option.fix-chosen { border-color: var(--fix); background: rgba(76, 175, 125, 0.05); }
+  .fix-option.fix-alt { opacity: 0.55; }
+
+  .fix-head {
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .fix-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--fix);
+    color: #0A1210;
+    padding: 2px 7px;
+    border-radius: 10px;
+  }
+
+  .fix-row { color: var(--text-muted); margin-top: 3px; }
+  .fix-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-right: 6px;
+  }
+  .fix-tag.pro { background: rgba(76,175,125,0.15); color: var(--fix); }
+  .fix-tag.con { background: rgba(226,87,76,0.15); color: var(--high); }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 13px;
+    font-family: var(--font-mono);
+  }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 32px 16px 64px; }
+    .card { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">Concurrency Validation Report</div>
+    <h1>RaceGuard AI</h1>
+    <p class="tagline">
+      An AI-assisted concurrency validation platform that combines static analysis, structured
+      concurrency modeling, and AI reasoning to identify, explain, and help reproduce potential
+      concurrency defects.
+    </p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">16</div>
+        <div class="stat-label">Classes analyzed</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">71</div>
+        <div class="stat-label">Cross-class accesses traced</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">11</div>
+        <div class="stat-label">Risks detected</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num high">9</div>
+        <div class="stat-label">High severity</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num medium">2</div>
+        <div class="stat-label">Medium severity</div>
+      </div>
+    </div>
+
+    <div class="pipeline-note">
+      <b>Stage 1</b> — deterministic AST-level static analysis (JavaParser) &nbsp;→&nbsp;
+      <b>Stage 2</b> — LLM reasoning over the resulting IR, run on AMD GPU via vLLM
+    </div>
+  </header>
+
+  <div class="filters">
+    <button class="filter-btn active" data-filter-severity="ALL">All</button>
+    <button class="filter-btn" data-filter-severity="HIGH">High severity</button>
+    <button class="filter-btn" data-filter-severity="MEDIUM">Medium severity</button>
+    <button class="filter-btn" data-filter-pattern="CHECK_THEN_ACT">Check-Then-Act</button><button class="filter-btn" data-filter-pattern="SHARED_MUTABLE_STATE">Shared-Mutable-State</button><button class="filter-btn" data-filter-pattern="UNSAFE_LAZY_INIT">Unsafe-Lazy-Init</button><button class="filter-btn" data-filter-pattern="UNSAFE_PUBLICATION">Unsafe-Publication</button>
+  </div>
+
+  <div class="cards">
+    
+    <article class="card sev-medium" data-severity="MEDIUM" data-pattern="SHARED_MUTABLE_STATE">
+      <header class="card-head">
+        <div class="card-head-left">
+          <span class="sev-badge">MEDIUM</span>
+          <span class="pattern-badge">Shared-Mutable-State</span>
+        </div>
+        <h3 class="card-title"><span class="class-name">GameState</span><span class="dot">.</span><span class="field-name">instance</span></h3>
+      </header>
+
+      <p class="card-explanation">The `instance` field in `GameState` is a mutable object reference that is accessed by multiple threads without proper synchronization. Since there is no guard (like a lock) around the accesses, a race condition can occur where one thread modifies the `instance` while another thread is reading it, leading to inconsistent state or data corruption.</p>
+
+      <div class="chips"><span class="chip">mutable object reference with no guard</span><span class="chip">1 unguarded writer</span><span class="chip">2 reader(s) with no synchronization guarantee</span></div>
+
+      <div class="section-label">Predicted interleaving</div>
+      <div class="trace-ladder">
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">GameState.getInstance().setState(&quot;NEW STATE&quot;)</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">GameState.getInstance().getState()</code>
+        </div>
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">GameState.getInstance().setState(&quot;ANOTHER STATE&quot;)</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">System.out.println(T2.state) // prints &quot;NEW STATE&quot; instead of &quot;ANOTHER STATE&quot;</code>
+        </div></div>
+
+      <div class="section-label">Fix</div>
+      <p class="fix-rationale"><strong>Synchronize all read and write access to this field</strong> — This approach ensures that all accesses to the `instance` field are properly guarded, preventing race conditions. While it may introduce some blocking, it provides a comprehensive solution that guarantees correct behavior across all access sites.</p>
+      <div class="fix-options">
+        <div class="fix-option fix-chosen">
+          <div class="fix-head">Synchronize all read and write access to this field <span class="fix-badge">chosen</span></div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>General-purpose, works for any type</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Blocking; must be applied consistently at every access site or the guarantee breaks</div>
+        </div>
+        <div class="fix-option fix-alt">
+          <div class="fix-head">Wrap in an AtomicReference </div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Lock-free reads/writes of the reference itself</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Only makes the reference swap atomic, not mutations to the object it points to</div>
+        </div></div>
+    </article>
+    <article class="card sev-high" data-severity="HIGH" data-pattern="SHARED_MUTABLE_STATE">
+      <header class="card-head">
+        <div class="card-head-left">
+          <span class="sev-badge">HIGH</span>
+          <span class="pattern-badge">Shared-Mutable-State</span>
+        </div>
+        <h3 class="card-title"><span class="class-name">GameState</span><span class="dot">.</span><span class="field-name">phase</span></h3>
+      </header>
+
+      <p class="card-explanation">The `phase` field in `GameState` is accessed both for reading and writing without proper synchronization. Since multiple methods (`addPlayer`, `reset`, `checkWinner`, etc.) can modify this field concurrently, race conditions can occur. For instance, if two threads try to change the phase simultaneously, the final state might be inconsistent, leading to unexpected game behavior.</p>
+
+      <div class="chips"><span class="chip">mutable object reference with no guard</span><span class="chip">7 unguarded writers</span><span class="chip">2 reader(s) with no synchronization guarantee</span><span class="chip">touched by a method that runs on its own thread (@Scheduled / message handler)</span></div>
+
+      <div class="section-label">Predicted interleaving</div>
+      <div class="trace-ladder">
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">GameWebSocket.handleTextMessage() [call to GameState.addPlayer()] - sets phase to PHASE_1</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">GameService.checkWinner() [direct field access] - reads phase as PHASE_0</code>
+        </div>
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">GameState.addPlayer() - sets phase to PHASE_2</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">GameService.checkWinner() [direct field access] - reads phase as PHASE_2</code>
+        </div></div>
+
+      <div class="section-label">Fix</div>
+      <p class="fix-rationale"><strong>Synchronize all read and write access to this field</strong> — This approach ensures that all accesses to the `phase` field are properly synchronized, preventing race conditions. While it may introduce some blocking, it guarantees consistent behavior across all accesses.</p>
+      <div class="fix-options">
+        <div class="fix-option fix-chosen">
+          <div class="fix-head">Synchronize all read and write access to this field <span class="fix-badge">chosen</span></div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>General-purpose, works for any type</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Blocking; must be applied consistently at every access site or the guarantee breaks</div>
+        </div>
+        <div class="fix-option fix-alt">
+          <div class="fix-head">Wrap in an AtomicReference </div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Lock-free reads/writes of the reference itself</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Only makes the reference swap atomic, not mutations to the object it points to</div>
+        </div></div>
+    </article>
+    <article class="card sev-high" data-severity="HIGH" data-pattern="SHARED_MUTABLE_STATE">
+      <header class="card-head">
+        <div class="card-head-left">
+          <span class="sev-badge">HIGH</span>
+          <span class="pattern-badge">Shared-Mutable-State</span>
+        </div>
+        <h3 class="card-title"><span class="class-name">GameState</span><span class="dot">.</span><span class="field-name">weaponsOnGround</span></h3>
+      </header>
+
+      <p class="card-explanation">The `weaponsOnGround` field is a `List&lt;Weapon&gt;` that is accessed and modified by multiple methods without proper synchronization. This can lead to race conditions where two threads might attempt to modify the list simultaneously, resulting in inconsistent state or data corruption. For example, one thread might remove a weapon while another is iterating over the list, causing the iterator to fail or the removed weapon to be processed again.</p>
+
+      <div class="chips"><span class="chip">plain (non-thread-safe) collection type</span><span class="chip">9 unguarded writers</span><span class="chip">14 reader(s) with no synchronization guarantee</span><span class="chip">touched by a method that runs on its own thread (@Scheduled / message handler)</span></div>
+
+      <div class="section-label">Predicted interleaving</div>
+      <div class="trace-ladder">
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">GameService.spawnWeapons() [call to GameState.addWeapon()] - adds a new weapon to the list</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">GameService.checkWeaponPickup() [call to GameState.removeWeapon()] - removes a weapon from the list</code>
+        </div>
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">GameService.spawnWeapons() [call to GameState.addWeapon()] - attempts to add another weapon to the list, but the list now contains a null or invalid entry due to concurrent modification</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">GameService.checkWeaponPickup() [call to GameState.removeWeapon()] - fails to find the weapon it was looking for because the list was concurrently modified</code>
+        </div></div>
+
+      <div class="section-label">Fix</div>
+      <p class="fix-rationale"><strong>Replace with a concurrent collection (ConcurrentHashMap, CopyOnWriteArrayList, etc.)</strong> — Using a concurrent collection like `CopyOnWriteArrayList` ensures that all modifications are thread-safe without requiring explicit locks, which simplifies the code and reduces the risk of deadlocks or performance bottlenecks.</p>
+      <div class="fix-options">
+        <div class="fix-option fix-chosen">
+          <div class="fix-head">Replace with a concurrent collection (ConcurrentHashMap, CopyOnWriteArrayList, etc.) <span class="fix-badge">chosen</span></div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>No manual locking; safe for concurrent iteration and modification</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Slightly higher memory/overhead than a plain collection; CopyOnWrite* is expensive for write-heavy workloads</div>
+        </div>
+        <div class="fix-option fix-alt">
+          <div class="fix-head">Synchronize every access site with a single shared lock </div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Works with any collection type, easy to reason about</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>All access serializes on one lock; can become a throughput bottleneck; easy to miss a call site</div>
+        </div></div>
+    </article>
+    <article class="card sev-medium" data-severity="MEDIUM" data-pattern="UNSAFE_PUBLICATION">
+      <header class="card-head">
+        <div class="card-head-left">
+          <span class="sev-badge">MEDIUM</span>
+          <span class="pattern-badge">Unsafe-Publication</span>
+        </div>
+        <h3 class="card-title"><span class="class-name">GameState</span><span class="dot">.</span><span class="field-name">instance</span></h3>
+      </header>
+
+      <p class="card-explanation">The `instance` field in `GameState` is written and later read by multiple threads without any visibility guarantees. This can lead to a situation where one thread sees an uninitialized or partially constructed `GameState` instance, causing potential runtime errors or inconsistent state.</p>
+
+      <div class="chips"><span class="chip">mutable object reference</span><span class="chip">not final</span><span class="chip">not volatile</span></div>
+
+      <div class="section-label">Predicted interleaving</div>
+      <div class="trace-ladder">
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">GameState.getInstance() writes instance = new GameState()</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">GameState.getInstance() reads instance (which is still null)</code>
+        </div>
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">instance.setScore(100)</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">int score = instance.getScore() (returns 0 because instance is null)</code>
+        </div></div>
+
+      <div class="section-label">Fix</div>
+      <p class="fix-rationale"><strong>Mark the field volatile</strong> — Marking the field `volatile` ensures that all threads see the most recent value of the `instance` field, providing a visibility guarantee without the need for complex synchronization mechanisms.</p>
+      <div class="fix-options">
+        <div class="fix-option fix-chosen">
+          <div class="fix-head">Mark the field volatile <span class="fix-badge">chosen</span></div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Guarantees visibility of the latest write across threads with minimal overhead</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Does not make compound operations on the object atomic — only the reference assignment</div>
+        </div>
+        <div class="fix-option fix-alt">
+          <div class="fix-head">Make the field final and fully construct the object before publishing it </div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Strongest guarantee; safe publication is automatic per the Java Memory Model</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Requires the object to be fully immutable or constructed in one shot, which isn&#x27;t always possible</div>
+        </div></div>
+    </article>
+    <article class="card sev-high" data-severity="HIGH" data-pattern="CHECK_THEN_ACT">
+      <header class="card-head">
+        <div class="card-head-left">
+          <span class="sev-badge">HIGH</span>
+          <span class="pattern-badge">Check-Then-Act</span>
+        </div>
+        <h3 class="card-title"><span class="class-name">GameState</span><span class="dot">.</span><span class="field-name">weaponsOnGround</span></h3>
+      </header>
+
+      <p class="card-explanation">The `checkThenAct` pattern is dangerous because the method first reads the `weaponsOnGround` list directly, then mutates it by calling `removeWeapon()`. Between these two operations, another thread could modify the list, leading to inconsistent state. Since there is no synchronization, the second thread&#x27;s changes might not be visible to the first thread, causing it to act on outdated data.</p>
+
+      <div class="chips"><span class="chip">read via direct field access (line 46) followed by a mutation via call to GameState.removeWeapon() (line 52)</span><span class="chip">both touch &#x27;GameState.weaponsOnGround&#x27; across a call boundary</span><span class="chip">neither access is synchronized</span></div>
+
+      <div class="section-label">Predicted interleaving</div>
+      <div class="trace-ladder">
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">GameService.checkWeaponPickup() reads weaponsOnGround (size = 3)</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">GameService.removeWeapon(weapon1) from weaponsOnGround</code>
+        </div>
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">GameService.checkWeaponPickup() calls removeWeapon(weapon2) on the outdated list (size = 2)</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">GameService.removeWeapon(weapon3) from weaponsOnGround</code>
+        </div></div>
+
+      <div class="section-label">Fix</div>
+      <p class="fix-rationale"><strong>Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act</strong> — This approach provides an atomic check-and-act operation, eliminating the need for external locking and ensuring that the operation is performed atomically without blocking other threads.</p>
+      <div class="fix-options">
+        <div class="fix-option fix-chosen">
+          <div class="fix-head">Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act <span class="fix-badge">chosen</span></div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Atomic check-and-act in a single call, no external locking needed</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Only available on concurrent collection types; requires switching the field&#x27;s type</div>
+        </div>
+        <div class="fix-option fix-alt">
+          <div class="fix-head">Wrap the check and the act in a single synchronized block </div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Correct regardless of the underlying type</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Blocking; every place that reads or writes this state must go through the same lock</div>
+        </div>
+        <div class="fix-option fix-alt">
+          <div class="fix-head">Use AtomicReference.compareAndSet() for the check-then-act </div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Lock-free</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Only applies when the check and act reduce to a single reference comparison-and-swap</div>
+        </div></div>
+    </article>
+    <article class="card sev-high" data-severity="HIGH" data-pattern="CHECK_THEN_ACT">
+      <header class="card-head">
+        <div class="card-head-left">
+          <span class="sev-badge">HIGH</span>
+          <span class="pattern-badge">Check-Then-Act</span>
+        </div>
+        <h3 class="card-title"><span class="class-name">GameState</span><span class="dot">.</span><span class="field-name">players</span></h3>
+      </header>
+
+      <p class="card-explanation">The `checkThenAct` pattern is dangerous because the method `GameService.checkWinner()` reads the `GameState.players` map and then mutates it without synchronization. Another thread could modify the map between these operations, leading to inconsistent state. Specifically, the read operation does not guarantee visibility of changes made by another thread before the read, and the subsequent mutation operation does not ensure that the read was seen by the current thread.</p>
+
+      <div class="chips"><span class="chip">read via call to GameState.getAllPlayers() (line 157) followed by a mutation via call to GameState.reset() (line 167)</span><span class="chip">both touch &#x27;GameState.players&#x27; across a call boundary</span><span class="chip">neither access is synchronized</span></div>
+
+      <div class="section-label">Predicted interleaving</div>
+      <div class="trace-ladder">
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">GameService.checkWinner() calls GameState.getAllPlayers() and reads the players map (line 157)</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">Another thread calls GameState.reset() and modifies the players map (line 167)</code>
+        </div>
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">GameService.checkWinner() continues and mutates the players map based on the stale read (line 167)</code>
+        </div></div>
+
+      <div class="section-label">Fix</div>
+      <p class="fix-rationale"><strong>Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act</strong> — This approach provides an atomic check-and-act operation, ensuring that the read and write happen in a single, non-blocking call, which avoids the race condition entirely.</p>
+      <div class="fix-options">
+        <div class="fix-option fix-chosen">
+          <div class="fix-head">Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act <span class="fix-badge">chosen</span></div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Atomic check-and-act in a single call, no external locking needed</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Only available on concurrent collection types; requires switching the field&#x27;s type</div>
+        </div>
+        <div class="fix-option fix-alt">
+          <div class="fix-head">Wrap the check and the act in a single synchronized block </div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Correct regardless of the underlying type</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Blocking; every place that reads or writes this state must go through the same lock</div>
+        </div>
+        <div class="fix-option fix-alt">
+          <div class="fix-head">Use AtomicReference.compareAndSet() for the check-then-act </div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Lock-free</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Only applies when the check and act reduce to a single reference comparison-and-swap</div>
+        </div></div>
+    </article>
+    <article class="card sev-high" data-severity="HIGH" data-pattern="CHECK_THEN_ACT">
+      <header class="card-head">
+        <div class="card-head-left">
+          <span class="sev-badge">HIGH</span>
+          <span class="pattern-badge">Check-Then-Act</span>
+        </div>
+        <h3 class="card-title"><span class="class-name">GameState</span><span class="dot">.</span><span class="field-name">phase</span></h3>
+      </header>
+
+      <p class="card-explanation">The `checkWinner()` method reads the `GameState.phase` field and then immediately writes to it without any synchronization. This means another thread could change the value of `GameState.phase` between the read and the write, leading to inconsistent behavior. For example, if `checkWinner()` checks the phase and finds it to be `GamePhase.WAITING`, another thread might change it to `GamePhase.PLAYING` right after the read but before the write, causing `checkWinner()` to incorrectly proceed as if the game was still waiting.</p>
+
+      <div class="chips"><span class="chip">read via direct field access (line 151) followed by a mutation via direct field access (line 161)</span><span class="chip">both touch &#x27;GameState.phase&#x27; across a call boundary</span><span class="chip">neither access is synchronized</span></div>
+
+      <div class="section-label">Predicted interleaving</div>
+      <div class="trace-ladder">
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">GameState.phase = GamePhase.WAITING; (line 151)</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">GameState.phase = GamePhase.PLAYING; (line 161)</code>
+        </div>
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">return GameState.phase; (line 152)</code>
+        </div></div>
+
+      <div class="section-label">Fix</div>
+      <p class="fix-rationale"><strong>Wrap the check and the act in a single synchronized block</strong> — This approach ensures that the read and subsequent write operations are atomic, preventing any other thread from modifying the `GameState.phase` field in between.</p>
+      <div class="fix-options">
+        <div class="fix-option fix-chosen">
+          <div class="fix-head">Wrap the check and the act in a single synchronized block <span class="fix-badge">chosen</span></div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Correct regardless of the underlying type</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Blocking; every place that reads or writes this state must go through the same lock</div>
+        </div>
+        <div class="fix-option fix-alt">
+          <div class="fix-head">Use AtomicReference.compareAndSet() for the check-then-act </div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Lock-free</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Only applies when the check and act reduce to a single reference comparison-and-swap</div>
+        </div></div>
+    </article>
+    <article class="card sev-high" data-severity="HIGH" data-pattern="CHECK_THEN_ACT">
+      <header class="card-head">
+        <div class="card-head-left">
+          <span class="sev-badge">HIGH</span>
+          <span class="pattern-badge">Check-Then-Act</span>
+        </div>
+        <h3 class="card-title"><span class="class-name">GameState</span><span class="dot">.</span><span class="field-name">players</span></h3>
+      </header>
+
+      <p class="card-explanation">The `CHECK_THEN_ACT` pattern is dangerous because the method `GameWebSocket.handleTextMessage()` first reads the `GameState.players` map to get a player, then mutates it by adding a new player. Between these two operations, another thread could modify the map, leading to inconsistent state. This is particularly problematic since there is no synchronization between the read and write operations, allowing race conditions to occur.</p>
+
+      <div class="chips"><span class="chip">read via call to GameState.getPlayer() (line 44) followed by a mutation via call to GameState.addPlayer() (line 54)</span><span class="chip">both touch &#x27;GameState.players&#x27; across a call boundary</span><span class="chip">neither access is synchronized</span></div>
+
+      <div class="section-label">Predicted interleaving</div>
+      <div class="trace-ladder">
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">GameState.addPlayer(&quot;player1&quot;)</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">GameWebSocket.handleTextMessage()</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">reads GameState.players.get(&quot;player1&quot;)</code>
+        </div>
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">GameState.players.put(&quot;player1&quot;, new GamePlayer())</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">adds new GamePlayer to the local copy of players</code>
+        </div></div>
+
+      <div class="section-label">Fix</div>
+      <p class="fix-rationale"><strong>Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act</strong> — This approach provides an atomic check-and-act operation, ensuring that the read and write are performed atomically without the need for external locking, which is more efficient and avoids blocking other threads.</p>
+      <div class="fix-options">
+        <div class="fix-option fix-chosen">
+          <div class="fix-head">Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act <span class="fix-badge">chosen</span></div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Atomic check-and-act in a single call, no external locking needed</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Only available on concurrent collection types; requires switching the field&#x27;s type</div>
+        </div>
+        <div class="fix-option fix-alt">
+          <div class="fix-head">Wrap the check and the act in a single synchronized block </div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Correct regardless of the underlying type</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Blocking; every place that reads or writes this state must go through the same lock</div>
+        </div>
+        <div class="fix-option fix-alt">
+          <div class="fix-head">Use AtomicReference.compareAndSet() for the check-then-act </div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Lock-free</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Only applies when the check and act reduce to a single reference comparison-and-swap</div>
+        </div></div>
+    </article>
+    <article class="card sev-high" data-severity="HIGH" data-pattern="CHECK_THEN_ACT">
+      <header class="card-head">
+        <div class="card-head-left">
+          <span class="sev-badge">HIGH</span>
+          <span class="pattern-badge">Check-Then-Act</span>
+        </div>
+        <h3 class="card-title"><span class="class-name">GameState</span><span class="dot">.</span><span class="field-name">players</span></h3>
+      </header>
+
+      <p class="card-explanation">The `CHECK_THEN_ACT` pattern is dangerous because the read operation (`GameState.getAllPlayers()`) and the subsequent write operation (`GameState.removePlayer()`) are not synchronized. This means another thread could modify the `GameState.players` map between these two operations, leading to inconsistent state. For example, a thread might read the players, find a player to remove, and then another thread could add or remove a player right after the first thread reads but before it acts on the read data.</p>
+
+      <div class="chips"><span class="chip">read via call to GameState.getAllPlayers() (line 91) followed by a mutation via call to GameState.removePlayer() (line 98)</span><span class="chip">both touch &#x27;GameState.players&#x27; across a call boundary</span><span class="chip">neither access is synchronized</span></div>
+
+      <div class="section-label">Predicted interleaving</div>
+      <div class="trace-ladder">
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">T1 calls GameState.getAllPlayers() and reads {&quot;player1&quot;: &quot;Alice&quot;, &quot;player2&quot;: &quot;Bob&quot;}</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">T2 calls GameState.removePlayer(&quot;player2&quot;)</code>
+        </div>
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">T1 finds player2 and proceeds to remove it</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">T2 modifies GameState.players to {&quot;player1&quot;: &quot;Alice&quot;}</code>
+        </div></div>
+
+      <div class="section-label">Fix</div>
+      <p class="fix-rationale"><strong>Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act</strong> — This approach provides an atomic check-and-act operation, ensuring that the read and write happen as a single, indivisible action, thus preventing any intervening modifications by other threads.</p>
+      <div class="fix-options">
+        <div class="fix-option fix-chosen">
+          <div class="fix-head">Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act <span class="fix-badge">chosen</span></div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Atomic check-and-act in a single call, no external locking needed</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Only available on concurrent collection types; requires switching the field&#x27;s type</div>
+        </div>
+        <div class="fix-option fix-alt">
+          <div class="fix-head">Wrap the check and the act in a single synchronized block </div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Correct regardless of the underlying type</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Blocking; every place that reads or writes this state must go through the same lock</div>
+        </div>
+        <div class="fix-option fix-alt">
+          <div class="fix-head">Use AtomicReference.compareAndSet() for the check-then-act </div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Lock-free</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Only applies when the check and act reduce to a single reference comparison-and-swap</div>
+        </div></div>
+    </article>
+    <article class="card sev-high" data-severity="HIGH" data-pattern="CHECK_THEN_ACT">
+      <header class="card-head">
+        <div class="card-head-left">
+          <span class="sev-badge">HIGH</span>
+          <span class="pattern-badge">Check-Then-Act</span>
+        </div>
+        <h3 class="card-title"><span class="class-name">GameState</span><span class="dot">.</span><span class="field-name">players</span></h3>
+      </header>
+
+      <p class="card-explanation">The `CHECK_THEN_ACT` pattern is dangerous because the read operation (`GameState.getAllPlayers()`) and the subsequent mutation (`GameState.reset()`) are not synchronized. This means another thread could modify the `players` map between these two operations, leading to inconsistent state. For example, if `getAllPlayers()` returns a snapshot of the players, another thread might reset the map, making the snapshot obsolete.</p>
+
+      <div class="chips"><span class="chip">read via call to GameState.getAllPlayers() (line 47) followed by a mutation via call to GameState.reset() (line 56)</span><span class="chip">both touch &#x27;GameState.players&#x27; across a call boundary</span><span class="chip">neither access is synchronized</span></div>
+
+      <div class="section-label">Predicted interleaving</div>
+      <div class="trace-ladder">
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">GameState.getAllPlayers() returns a snapshot of players</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">GameState.reset() clears the players map</code>
+        </div>
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">Tries to process the outdated snapshot of players</code>
+        </div></div>
+
+      <div class="section-label">Fix</div>
+      <p class="fix-rationale"><strong>Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act</strong> — This approach provides an atomic check-and-act operation, ensuring that the read and write happen in a single, non-blocking step without the need for external synchronization.</p>
+      <div class="fix-options">
+        <div class="fix-option fix-chosen">
+          <div class="fix-head">Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act <span class="fix-badge">chosen</span></div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Atomic check-and-act in a single call, no external locking needed</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Only available on concurrent collection types; requires switching the field&#x27;s type</div>
+        </div>
+        <div class="fix-option fix-alt">
+          <div class="fix-head">Wrap the check and the act in a single synchronized block </div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Correct regardless of the underlying type</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Blocking; every place that reads or writes this state must go through the same lock</div>
+        </div>
+        <div class="fix-option fix-alt">
+          <div class="fix-head">Use AtomicReference.compareAndSet() for the check-then-act </div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Lock-free</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Only applies when the check and act reduce to a single reference comparison-and-swap</div>
+        </div></div>
+    </article>
+    <article class="card sev-high" data-severity="HIGH" data-pattern="UNSAFE_LAZY_INIT">
+      <header class="card-head">
+        <div class="card-head-left">
+          <span class="sev-badge">HIGH</span>
+          <span class="pattern-badge">Unsafe-Lazy-Init</span>
+        </div>
+        <h3 class="card-title"><span class="class-name">GameState</span><span class="dot">.</span><span class="field-name">instance</span></h3>
+      </header>
+
+      <p class="card-explanation">The `instance` field in `GameState` is lazily initialized without any synchronization. This means that if two threads execute the `getInstance()` method concurrently, they could both pass the null check and create their own instances, violating the singleton guarantee. Since there is no locking, the second thread may overwrite the first thread&#x27;s instance, leading to multiple instances being used instead of a single one.</p>
+
+      <div class="chips"><span class="chip">lazy initialization of &#x27;instance&#x27; in GameState.getInstance() has no synchronization at all</span><span class="chip">two threads can simultaneously observe instance == null and both construct a new instance</span></div>
+
+      <div class="section-label">Predicted interleaving</div>
+      <div class="trace-ladder">
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">enters GameState.getInstance()</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">enters GameState.getInstance()</code>
+        </div>
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">checks if instance == null</code>
+        </div>
+        <div class="trace-row lane-t1">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T1</span>
+          <code class="trace-text">instance = new GameState()</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">checks if instance == null</code>
+        </div>
+        <div class="trace-row lane-t2">
+          <span class="trace-rail"></span>
+          <span class="trace-lane">T2</span>
+          <code class="trace-text">instance = new GameState()</code>
+        </div></div>
+
+      <div class="section-label">Fix</div>
+      <p class="fix-rationale"><strong>Replace with the Initialization-on-Demand Holder idiom (static inner class)</strong> — This approach ensures thread safety, lazy initialization, and avoids the need for explicit locking, making it the most suitable fix for this specific pattern.</p>
+      <div class="fix-options">
+        <div class="fix-option fix-chosen">
+          <div class="fix-head">Replace with the Initialization-on-Demand Holder idiom (static inner class) <span class="fix-badge">chosen</span></div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Thread-safe, lazy, and lock-free — the standard fix for this exact problem</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Only applies to static singleton-style fields</div>
+        </div>
+        <div class="fix-option fix-alt">
+          <div class="fix-head">Synchronize the entire accessor method </div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Simple, obviously correct</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Every call pays lock overhead even long after the field is initialized</div>
+        </div>
+        <div class="fix-option fix-alt">
+          <div class="fix-head">Initialize eagerly at declaration or in the constructor </div>
+          <div class="fix-row"><span class="fix-tag pro">pro</span>Removes the race entirely; simplest possible fix if construction is cheap</div>
+          <div class="fix-row"><span class="fix-tag con">con</span>Loses the laziness — object is created even if never used</div>
+        </div></div>
+    </article>
+  </div>
+
+  <footer>
+    Generated by RaceGuard AI · every risk above was found by deterministic static analysis first;
+    the LLM narrates and helps prioritize a fix, it does not decide what counts as a risk.
+  </footer>
+
+</div>
+
+<script>
+  const severityButtons = document.querySelectorAll('[data-filter-severity]');
+  const patternButtons = document.querySelectorAll('[data-filter-pattern]');
+  const cards = document.querySelectorAll('.card');
+
+  let activeSeverity = 'ALL';
+  let activePattern = null;
+
+  function applyFilters() {
+    cards.forEach(card => {
+      const sevMatch = activeSeverity === 'ALL' || card.dataset.severity === activeSeverity;
+      const patMatch = !activePattern || card.dataset.pattern === activePattern;
+      card.classList.toggle('hidden', !(sevMatch && patMatch));
+    });
+  }
+
+  severityButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeSeverity = btn.dataset.filterSeverity;
+      severityButtons.forEach(b => b.classList.toggle('active', b === btn));
+      applyFilters();
+    });
+  });
+
+  patternButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const wasActive = btn.classList.contains('active');
+      patternButtons.forEach(b => b.classList.remove('active'));
+      activePattern = wasActive ? null : btn.dataset.filterPattern;
+      if (!wasActive) btn.classList.add('active');
+      applyFilters();
+    });
+  });
+</script>
+</body>
+</html>

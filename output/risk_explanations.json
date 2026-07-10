@@ -1,0 +1,156 @@
+[
+  {
+    "pattern": "SHARED_MUTABLE_STATE",
+    "owningClass": "GameState",
+    "field": "instance",
+    "explanation": "The `instance` field in `GameState` is a mutable object reference that is accessed by multiple threads without proper synchronization. Since there is no guard (like a lock) around the accesses, a race condition can occur where one thread modifies the `instance` while another thread is reading it, leading to inconsistent state or data corruption.",
+    "interleaving": [
+      "T1: GameState.getInstance().setState(\"NEW STATE\")",
+      "T2: GameState.getInstance().getState()",
+      "T1: GameState.getInstance().setState(\"ANOTHER STATE\")",
+      "T2: System.out.println(T2.state) // prints \"NEW STATE\" instead of \"ANOTHER STATE\""
+    ],
+    "recommendedFixApproach": "Synchronize all read and write access to this field",
+    "recommendedFixRationale": "This approach ensures that all accesses to the `instance` field are properly guarded, preventing race conditions. While it may introduce some blocking, it provides a comprehensive solution that guarantees correct behavior across all access sites."
+  },
+  {
+    "pattern": "SHARED_MUTABLE_STATE",
+    "owningClass": "GameState",
+    "field": "phase",
+    "explanation": "The `phase` field in `GameState` is accessed both for reading and writing without proper synchronization. Since multiple methods (`addPlayer`, `reset`, `checkWinner`, etc.) can modify this field concurrently, race conditions can occur. For instance, if two threads try to change the phase simultaneously, the final state might be inconsistent, leading to unexpected game behavior.",
+    "interleaving": [
+      "T1: GameWebSocket.handleTextMessage() [call to GameState.addPlayer()] - sets phase to PHASE_1",
+      "T2: GameService.checkWinner() [direct field access] - reads phase as PHASE_0",
+      "T1: GameState.addPlayer() - sets phase to PHASE_2",
+      "T2: GameService.checkWinner() [direct field access] - reads phase as PHASE_2"
+    ],
+    "recommendedFixApproach": "Synchronize all read and write access to this field",
+    "recommendedFixRationale": "This approach ensures that all accesses to the `phase` field are properly synchronized, preventing race conditions. While it may introduce some blocking, it guarantees consistent behavior across all accesses."
+  },
+  {
+    "pattern": "SHARED_MUTABLE_STATE",
+    "owningClass": "GameState",
+    "field": "weaponsOnGround",
+    "explanation": "The `weaponsOnGround` field is a `List\u003cWeapon\u003e` that is accessed and modified by multiple methods without proper synchronization. This can lead to race conditions where two threads might attempt to modify the list simultaneously, resulting in inconsistent state or data corruption. For example, one thread might remove a weapon while another is iterating over the list, causing the iterator to fail or the removed weapon to be processed again.",
+    "interleaving": [
+      "T1: GameService.spawnWeapons() [call to GameState.addWeapon()] - adds a new weapon to the list",
+      "T2: GameService.checkWeaponPickup() [call to GameState.removeWeapon()] - removes a weapon from the list",
+      "T1: GameService.spawnWeapons() [call to GameState.addWeapon()] - attempts to add another weapon to the list, but the list now contains a null or invalid entry due to concurrent modification",
+      "T2: GameService.checkWeaponPickup() [call to GameState.removeWeapon()] - fails to find the weapon it was looking for because the list was concurrently modified"
+    ],
+    "recommendedFixApproach": "Replace with a concurrent collection (ConcurrentHashMap, CopyOnWriteArrayList, etc.)",
+    "recommendedFixRationale": "Using a concurrent collection like `CopyOnWriteArrayList` ensures that all modifications are thread-safe without requiring explicit locks, which simplifies the code and reduces the risk of deadlocks or performance bottlenecks."
+  },
+  {
+    "pattern": "UNSAFE_PUBLICATION",
+    "owningClass": "GameState",
+    "field": "instance",
+    "explanation": "The `instance` field in `GameState` is written and later read by multiple threads without any visibility guarantees. This can lead to a situation where one thread sees an uninitialized or partially constructed `GameState` instance, causing potential runtime errors or inconsistent state.",
+    "interleaving": [
+      "T1: GameState.getInstance() writes instance \u003d new GameState()",
+      "T2: GameState.getInstance() reads instance (which is still null)",
+      "T1: instance.setScore(100)",
+      "T2: int score \u003d instance.getScore() (returns 0 because instance is null)"
+    ],
+    "recommendedFixApproach": "Mark the field volatile",
+    "recommendedFixRationale": "Marking the field `volatile` ensures that all threads see the most recent value of the `instance` field, providing a visibility guarantee without the need for complex synchronization mechanisms."
+  },
+  {
+    "pattern": "CHECK_THEN_ACT",
+    "owningClass": "GameState",
+    "field": "weaponsOnGround",
+    "explanation": "The `checkThenAct` pattern is dangerous because the method first reads the `weaponsOnGround` list directly, then mutates it by calling `removeWeapon()`. Between these two operations, another thread could modify the list, leading to inconsistent state. Since there is no synchronization, the second thread\u0027s changes might not be visible to the first thread, causing it to act on outdated data.",
+    "interleaving": [
+      "T1: GameService.checkWeaponPickup() reads weaponsOnGround (size \u003d 3)",
+      "T2: GameService.removeWeapon(weapon1) from weaponsOnGround",
+      "T1: GameService.checkWeaponPickup() calls removeWeapon(weapon2) on the outdated list (size \u003d 2)",
+      "T2: GameService.removeWeapon(weapon3) from weaponsOnGround"
+    ],
+    "recommendedFixApproach": "Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act",
+    "recommendedFixRationale": "This approach provides an atomic check-and-act operation, eliminating the need for external locking and ensuring that the operation is performed atomically without blocking other threads."
+  },
+  {
+    "pattern": "CHECK_THEN_ACT",
+    "owningClass": "GameState",
+    "field": "players",
+    "explanation": "The `checkThenAct` pattern is dangerous because the method `GameService.checkWinner()` reads the `GameState.players` map and then mutates it without synchronization. Another thread could modify the map between these operations, leading to inconsistent state. Specifically, the read operation does not guarantee visibility of changes made by another thread before the read, and the subsequent mutation operation does not ensure that the read was seen by the current thread.",
+    "interleaving": [
+      "T1: GameService.checkWinner() calls GameState.getAllPlayers() and reads the players map (line 157)",
+      "T2: Another thread calls GameState.reset() and modifies the players map (line 167)",
+      "T1: GameService.checkWinner() continues and mutates the players map based on the stale read (line 167)"
+    ],
+    "recommendedFixApproach": "Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act",
+    "recommendedFixRationale": "This approach provides an atomic check-and-act operation, ensuring that the read and write happen in a single, non-blocking call, which avoids the race condition entirely."
+  },
+  {
+    "pattern": "CHECK_THEN_ACT",
+    "owningClass": "GameState",
+    "field": "phase",
+    "explanation": "The `checkWinner()` method reads the `GameState.phase` field and then immediately writes to it without any synchronization. This means another thread could change the value of `GameState.phase` between the read and the write, leading to inconsistent behavior. For example, if `checkWinner()` checks the phase and finds it to be `GamePhase.WAITING`, another thread might change it to `GamePhase.PLAYING` right after the read but before the write, causing `checkWinner()` to incorrectly proceed as if the game was still waiting.",
+    "interleaving": [
+      "T1: GameState.phase \u003d GamePhase.WAITING; (line 151)",
+      "T2: GameState.phase \u003d GamePhase.PLAYING; (line 161)",
+      "T1: return GameState.phase; (line 152)"
+    ],
+    "recommendedFixApproach": "Wrap the check and the act in a single synchronized block",
+    "recommendedFixRationale": "This approach ensures that the read and subsequent write operations are atomic, preventing any other thread from modifying the `GameState.phase` field in between."
+  },
+  {
+    "pattern": "CHECK_THEN_ACT",
+    "owningClass": "GameState",
+    "field": "players",
+    "explanation": "The `CHECK_THEN_ACT` pattern is dangerous because the method `GameWebSocket.handleTextMessage()` first reads the `GameState.players` map to get a player, then mutates it by adding a new player. Between these two operations, another thread could modify the map, leading to inconsistent state. This is particularly problematic since there is no synchronization between the read and write operations, allowing race conditions to occur.",
+    "interleaving": [
+      "T1: GameState.addPlayer(\"player1\")",
+      "T2: GameWebSocket.handleTextMessage()",
+      "T2: reads GameState.players.get(\"player1\")",
+      "T1: GameState.players.put(\"player1\", new GamePlayer())",
+      "T2: adds new GamePlayer to the local copy of players"
+    ],
+    "recommendedFixApproach": "Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act",
+    "recommendedFixRationale": "This approach provides an atomic check-and-act operation, ensuring that the read and write are performed atomically without the need for external locking, which is more efficient and avoids blocking other threads."
+  },
+  {
+    "pattern": "CHECK_THEN_ACT",
+    "owningClass": "GameState",
+    "field": "players",
+    "explanation": "The `CHECK_THEN_ACT` pattern is dangerous because the read operation (`GameState.getAllPlayers()`) and the subsequent write operation (`GameState.removePlayer()`) are not synchronized. This means another thread could modify the `GameState.players` map between these two operations, leading to inconsistent state. For example, a thread might read the players, find a player to remove, and then another thread could add or remove a player right after the first thread reads but before it acts on the read data.",
+    "interleaving": [
+      "T1: T1 calls GameState.getAllPlayers() and reads {\"player1\": \"Alice\", \"player2\": \"Bob\"}",
+      "T2: T2 calls GameState.removePlayer(\"player2\")",
+      "T1: T1 finds player2 and proceeds to remove it",
+      "T2: T2 modifies GameState.players to {\"player1\": \"Alice\"}"
+    ],
+    "recommendedFixApproach": "Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act",
+    "recommendedFixRationale": "This approach provides an atomic check-and-act operation, ensuring that the read and write happen as a single, indivisible action, thus preventing any intervening modifications by other threads."
+  },
+  {
+    "pattern": "CHECK_THEN_ACT",
+    "owningClass": "GameState",
+    "field": "players",
+    "explanation": "The `CHECK_THEN_ACT` pattern is dangerous because the read operation (`GameState.getAllPlayers()`) and the subsequent mutation (`GameState.reset()`) are not synchronized. This means another thread could modify the `players` map between these two operations, leading to inconsistent state. For example, if `getAllPlayers()` returns a snapshot of the players, another thread might reset the map, making the snapshot obsolete.",
+    "interleaving": [
+      "T1: GameState.getAllPlayers() returns a snapshot of players",
+      "T2: GameState.reset() clears the players map",
+      "T1: Tries to process the outdated snapshot of players"
+    ],
+    "recommendedFixApproach": "Use ConcurrentHashMap.putIfAbsent() / computeIfAbsent() instead of a separate check + act",
+    "recommendedFixRationale": "This approach provides an atomic check-and-act operation, ensuring that the read and write happen in a single, non-blocking step without the need for external synchronization."
+  },
+  {
+    "pattern": "UNSAFE_LAZY_INIT",
+    "owningClass": "GameState",
+    "field": "instance",
+    "explanation": "The `instance` field in `GameState` is lazily initialized without any synchronization. This means that if two threads execute the `getInstance()` method concurrently, they could both pass the null check and create their own instances, violating the singleton guarantee. Since there is no locking, the second thread may overwrite the first thread\u0027s instance, leading to multiple instances being used instead of a single one.",
+    "interleaving": [
+      "T1: enters GameState.getInstance()",
+      "T2: enters GameState.getInstance()",
+      "T1: checks if instance \u003d\u003d null",
+      "T1: instance \u003d new GameState()",
+      "T2: checks if instance \u003d\u003d null",
+      "T2: instance \u003d new GameState()"
+    ],
+    "recommendedFixApproach": "Replace with the Initialization-on-Demand Holder idiom (static inner class)",
+    "recommendedFixRationale": "This approach ensures thread safety, lazy initialization, and avoids the need for explicit locking, making it the most suitable fix for this specific pattern."
+  }
+]

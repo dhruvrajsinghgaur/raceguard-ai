@@ -38,9 +38,6 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.2.0</version>
-                <configuration>
-                    <mainClass>com.raceguard.ProjectAnalyzer</mainClass>
-                </configuration>
             </plugin>
 
             <!-- Builds a single runnable jar with dependencies included -->

@@ -1584,6 +1584,19 @@
           "riskNotes": []
         }
       ]
+    },
+    {
+      "className": "MmoServerApplicationTests",
+      "sourceFile": "MmoServerApplicationTests.java",
+      "fields": [],
+      "methods": [
+        {
+          "name": "contextLoads",
+          "hasScheduledAnnotation": false,
+          "accesses": [],
+          "riskNotes": []
+        }
+      ]
     }
   ],
   "crossClassAccesses": [

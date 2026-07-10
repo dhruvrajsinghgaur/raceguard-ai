@@ -35,12 +35,14 @@ import com.raceguard.util.AnalyzerUtils;
 public class ProjectAnalyzer {
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 1) {
-            System.err.println("Usage: ProjectAnalyzer <path-to-project-dir-or-file>");
+        if (args.length < 2) {
+            System.err.println("Usage: ProjectAnalyzer <source-dir> <output-dir>");
             System.exit(1);
         }
 
         File root = new File(args[0]);
+        File outputDir = new File(args[1]);
+        outputDir.mkdirs();
         List<File> javaFiles = AnalyzerUtils.collectJavaFiles(root);
         if (javaFiles.isEmpty()) {
             System.err.println("No .java files found under " + root);
@@ -84,11 +86,12 @@ public class ProjectAnalyzer {
         String json = new GsonBuilder().setPrettyPrinting().create().toJson(output);
         System.out.println(json);
 
-        new File("output").mkdirs();
-        try (FileWriter writer = new FileWriter("output/project_graph.json")) {
+        File graphFile = new File(outputDir, "project_graph.json");
+
+        try (FileWriter writer = new FileWriter(graphFile)) {
             writer.write(json);
         }
-        System.err.println("\nWrote output/project_graph.json ("
+        System.err.println("\nWrote " + graphFile.getAbsolutePath() + " ("
                 + output.classes.size() + " classes, "
                 + crossClassAccesses.size() + " cross-class accesses, "
                 + projectRisks.size() + " project risks)"
