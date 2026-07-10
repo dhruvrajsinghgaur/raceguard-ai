@@ -30,6 +30,9 @@ import uuid
 import zipfile
 from pathlib import Path
 from threading import Thread
+from werkzeug.exceptions import RequestEntityTooLarge
+import shutil
+import time
 
 from flask import Flask, request, render_template_string, send_from_directory, redirect, Response
 
@@ -47,8 +50,56 @@ MAX_UPLOAD_MB = 50
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_MB * 1024 * 1024
 
+@app.errorhandler(413)
+def handle_413(e):
+    return handle_large_upload(e)
+
+
+@app.errorhandler(RequestEntityTooLarge)
+def handle_large_upload(e):
+    print("***** 413 HANDLER CALLED *****", flush=True)
+    return render_template_string(
+        ERROR_PAGE,
+        message=(
+            f"The uploaded ZIP file exceeds the maximum allowed size of "
+            f"{MAX_UPLOAD_MB} MB.\n\n"
+            "Please compress your project or remove unnecessary files "
+            "and try again."
+        ),
+    ), 413
+
+
+JOB_RETENTION_SECONDS = 60 * 60
 # job_id -> {"logs": Queue, "status": "running"|"done"|"error", "dir": Path, "error": str|None}
 jobs = {}
+
+def cleanup_old_jobs():
+    while True:
+        now = time.time()
+
+        for job_id in list(jobs.keys()):
+
+            job = jobs[job_id]
+
+            if job["status"] not in ("done", "error"):
+                continue
+
+            finished = job.get("finished_at")
+
+            if finished is None:
+                continue
+
+            age = now - finished
+
+            if age > JOB_RETENTION_SECONDS:
+                try:
+                    shutil.rmtree(job["dir"])
+                except Exception:
+                    pass
+
+                jobs.pop(job_id, None)
+
+        time.sleep(300)
 
 
 def log(job, message):
@@ -109,6 +160,7 @@ def analyze_job(job_id: str, job_dir: Path, git_url: str, zip_path):
         ok, message = prepare_source(job, job_dir, zip_path, git_url)
         if not ok:
             job["status"] = "error"
+            job["finished_at"] = time.time()
             job["error"] = message
             log(job, f"ERROR: {message}")
             return
@@ -117,6 +169,7 @@ def analyze_job(job_id: str, job_dir: Path, git_url: str, zip_path):
         log(job, f"Found {len(java_files)} Java files")
         if not java_files:
             job["status"] = "error"
+            job["finished_at"] = time.time()
             job["error"] = "No .java files found in the submitted project."
             log(job, "ERROR: no .java files found")
             return
@@ -129,6 +182,7 @@ def analyze_job(job_id: str, job_dir: Path, git_url: str, zip_path):
         )
         if not ok:
             job["status"] = "error"
+            job["finished_at"] = time.time()
             job["error"] = "Stage 1 (static analysis) failed — see log above."
             return
         log(job, "Stage 1 completed")
@@ -141,6 +195,7 @@ def analyze_job(job_id: str, job_dir: Path, git_url: str, zip_path):
         )
         if not ok:
             job["status"] = "error"
+            job["finished_at"] = time.time()
             job["error"] = "Stage 2 (LLM reasoning) failed — is vLLM running on this box? See log above."
             return
         log(job, "Stage 2 completed")
@@ -149,16 +204,21 @@ def analyze_job(job_id: str, job_dir: Path, git_url: str, zip_path):
         generate_report.generate(job_dir / "output")
         log(job, "Analysis complete")
         job["status"] = "done"
+        job["finished_at"] = time.time()
 
     except Exception as e:
         job["status"] = "error"
+        job["finished_at"] = time.time()
         job["error"] = str(e)
         log(job, f"ERROR: {e}")
 
 
 @app.route("/", methods=["GET"])
 def index():
-    return render_template_string(UPLOAD_PAGE)
+    return render_template_string(
+        UPLOAD_PAGE,
+        max_upload_mb=MAX_UPLOAD_MB
+    )
 
 
 @app.route("/analyze", methods=["POST"])
@@ -236,6 +296,11 @@ def report(job_id):
     return send_from_directory(jobs[job_id]["dir"] / "output", "report.html")
 
 
+@app.route("/test413")
+def test413():
+    raise RequestEntityTooLarge()
+
+
 UPLOAD_PAGE = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -292,6 +357,21 @@ UPLOAD_PAGE = """<!DOCTYPE html>
     font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);
     margin-top: 16px; text-align: center;
   }
+
+  .upload-error {
+      display: none;
+      margin-top: 18px;
+      padding: 12px 16px;
+      border-radius: 8px;
+
+      background: rgba(226, 87, 76, 0.12);
+      border: 1px solid #E2574C;
+      color: #E2574C;
+
+      font-size: 14px;
+      line-height: 1.5;
+  }
+
 </style>
 </head>
 <body>
@@ -303,16 +383,130 @@ UPLOAD_PAGE = """<!DOCTYPE html>
     defects, then explains and prioritizes fixes using an LLM running on this
     AMD GPU.
   </p>
-  <form action="/analyze" method="post" enctype="multipart/form-data">
+  <form id="uploadForm" action="/analyze" method="post" enctype="multipart/form-data">
     <label for="project_zip">Upload a .zip of your Java source</label>
     <input type="file" id="project_zip" name="project_zip" accept=".zip">
     <div class="or-divider">or</div>
     <label for="git_url">Paste a public git URL</label>
     <input type="text" id="git_url" name="git_url" placeholder="https://github.com/you/your-repo">
-    <button type="submit">Analyze for concurrency risks</button>
-  </form>
-  <div class="note">Analysis usually takes 20–60 seconds.</div>
+    <button id="analyzeBtn" type="submit">Analyze for concurrency risks</button>
+    </form>
+    <div id="upload-error" class="upload-error"></div>
+    <div class="note">Analysis usually takes 20–60 seconds.</div>
 </div>
+
+<script>
+const MAX_UPLOAD_MB = {{ max_upload_mb }};
+</script>
+
+<script>
+const form = document.getElementById("uploadForm");
+const fileInput = document.getElementById("project_zip");
+
+form.addEventListener("submit", function (e) {
+
+    const button = document.getElementById("analyzeBtn");
+    if (button.disabled) {
+        e.preventDefault();
+        return;
+    }
+    const errorBox = document.getElementById("upload-error");
+
+    errorBox.style.display = "none";
+    errorBox.innerHTML = "";
+    const file = fileInput.files[0];
+
+    // If user is using Git URL only, allow submission.
+   const gitUrl = document.getElementById("git_url").value.trim();
+
+  if (!file && !gitUrl) {
+
+      e.preventDefault();
+
+      errorBox.style.display = "block";
+
+      errorBox.innerHTML =
+          "<strong>No Project Selected</strong><br><br>" +
+          "Upload a ZIP file or enter a public Git repository URL.";
+
+      return;
+  }
+
+    if (gitUrl &&
+           !gitUrl.startsWith("https://") &&
+           !gitUrl.startsWith("http://")) {
+
+           e.preventDefault();
+
+           errorBox.style.display = "block";
+
+           errorBox.innerHTML =
+               "<strong>Invalid Git URL</strong><br><br>" +
+               "Please enter a valid public Git repository URL.";
+
+           return;
+    }
+
+   if (file) {
+
+       if (!file.name.toLowerCase().endsWith(".zip")) {
+
+           e.preventDefault();
+
+           errorBox.style.display = "block";
+
+           errorBox.innerHTML =
+               "<strong>Invalid File</strong><br><br>" +
+               "RaceGuard AI only accepts ZIP archives (.zip).";
+
+           return;
+       }
+
+       const MAX_SIZE = MAX_UPLOAD_MB * 1024 * 1024;
+
+       if (file.size > MAX_SIZE) {
+
+           e.preventDefault();
+
+           errorBox.style.display = "block";
+
+           errorBox.innerHTML =
+               `<strong>Upload Failed</strong><br><br>` +
+               `Selected ZIP: ${(file.size / 1024 / 1024).toFixed(1)} MB<br>` +
+               `Maximum allowed: ${MAX_UPLOAD_MB} MB<br><br>` +
+               `Suggestions:<br>` +
+               `• Remove build/target folders<br>` +
+               `• Remove .git directory<br>` +
+               `• Exclude IDE folders (.idea, .vscode)<br>` +
+               `• Upload source code only`;
+
+           return;
+       }
+   }
+
+   button.disabled = true;
+   button.textContent = "Uploading...";
+   button.style.opacity = "0.7";
+
+   window.addEventListener("pageshow", function () {
+       button.disabled = false;
+       button.textContent = "Analyze for concurrency risks";
+       button.style.opacity = "1";
+       button.style.cursor = "pointer";
+   });
+
+});
+
+fileInput.addEventListener("change", function () {
+
+    const errorBox = document.getElementById("upload-error");
+
+    errorBox.style.display = "none";
+    errorBox.innerHTML = "";
+});
+
+</script>
+
 </body>
 </html>
 """
@@ -417,13 +611,34 @@ ERROR_PAGE = """<!DOCTYPE html>
 </head>
 <body>
 <div class="box">
-  <h1>Analysis failed</h1>
-  <pre>{{ message }}</pre>
-  <p><a href="/">&larr; Try again</a></p>
+ <h1>Upload / Analysis Failed</h1>
+
+ <pre>{{ message }}</pre>
+
+ <p>
+ Please check the following before trying again:
+ </p>
+
+ <ul style="color:#8B96A5; line-height:1.7;">
+     <li>ZIP file is under 50 MB</li>
+     <li>The ZIP contains Java source files (.java)</li>
+     <li>The ZIP is not corrupted</li>
+     <li>The Git repository is public (if using a Git URL)</li>
+ </ul>
+
+ <p>
+     <a href="/">&larr; Try another project</a>
+ </p>
 </div>
 </body>
 </html>
 """
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, threaded=True)
+    Thread(target=cleanup_old_jobs, daemon=True).start()
+
+    app.run(
+        host="0.0.0.0",
+        port=5050,
+        threaded=True
+    )

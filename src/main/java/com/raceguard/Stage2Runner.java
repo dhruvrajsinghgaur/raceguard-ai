@@ -8,7 +8,6 @@ import com.raceguard.model.ProjectGraph;
 import com.raceguard.model.ProjectRisk;
 import com.raceguard.model.RiskExplanation;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -41,21 +40,31 @@ public class Stage2Runner {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 1) {
-            System.err.println("Usage: Stage2Runner <output-dir>");
-            System.exit(1);
-        }
-
-        File outputDir = new File(args[0]);
         ProjectGraph graph;
-        File graphFile = new File(outputDir, "project_graph.json");
-
-        try (FileReader reader = new FileReader(graphFile)) {
+        try (FileReader reader = new FileReader("output/project_graph.json")) {
             graph = GSON.fromJson(reader, ProjectGraph.class);
         }
 
-        if (graph == null || graph.projectRisks.isEmpty()) {
-            System.err.println("No risks found in output/project_graph.json — run ProjectAnalyzer first.");
+        if (graph == null) {
+            throw new IllegalStateException(
+                    "project_graph.json could not be loaded."
+            );
+        }
+
+        if (graph.projectRisks == null) {
+            graph.projectRisks = new ArrayList<>();
+        }
+
+        if (graph.projectRisks.isEmpty()) {
+
+            System.out.println("No concurrency risks detected.");
+
+            try (FileWriter writer =
+                         new FileWriter("output/risk_explanations.json")) {
+
+                writer.write("[]");
+            }
+
             return;
         }
 
@@ -66,7 +75,6 @@ public class Stage2Runner {
 
         int i = 0;
         for (ProjectRisk risk : graph.projectRisks) {
-
             i++;
             String label = risk.owningClass + "." + risk.field + " [" + risk.pattern + "]";
             System.err.println("(" + i + "/" + graph.projectRisks.size() + ") " + label);
@@ -84,8 +92,7 @@ public class Stage2Runner {
                 explanations.add(explanation);
 
             } catch (Exception e) {
-                System.err.println("FAILED");
-                e.printStackTrace();
+                System.err.println("  FAILED: " + e.getMessage());
                 // Don't let one bad response kill the whole batch — record a
                 // placeholder so the gap is visible in the output rather than silent.
                 RiskExplanation failed = new RiskExplanation();
@@ -98,13 +105,11 @@ public class Stage2Runner {
             }
         }
 
-        File explanationFile = new File(outputDir, "risk_explanations.json");
-
-        try (FileWriter writer = new FileWriter(explanationFile)) {
+        try (FileWriter writer = new FileWriter("output/risk_explanations.json")) {
             writer.write(GSON.toJson(explanations));
         }
 
-        System.err.println("\nWrote " + explanationFile.getAbsolutePath() + " (" + explanations.size() + " explanation(s))");
+        System.err.println("\nWrote output/risk_explanations.json (" + explanations.size() + " explanation(s))");
     }
 
     /**

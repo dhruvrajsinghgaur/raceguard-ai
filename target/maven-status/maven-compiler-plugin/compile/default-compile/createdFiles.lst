@@ -13,8 +13,8 @@ com/raceguard/model/ParsedUnit.class
 com/raceguard/analysis/CrossClassLinker.class
 com/raceguard/analysis/DeadlockDetector.class
 com/raceguard/model/ProjectGraph.class
-com/raceguard/Stage2Runner.class
 com/raceguard/model/ProjectRisk.class
+com/raceguard/Stage2Runner.class
 com/raceguard/model/ClassGraph.class
 com/raceguard/model/FieldAccessSummary.class
 com/raceguard/analysis/RiskEngine.class
@@ -23,5 +23,5 @@ com/raceguard/model/RiskExplanation.class
 com/raceguard/parser/ClassGraphBuilder.class
 com/raceguard/model/CrossClassAccess.class
 com/raceguard/model/FieldAccess.class
-com/raceguard/ProjectAnalyzer.class
 com/raceguard/analysis/FixSuggestionEngine.class
+com/raceguard/ProjectAnalyzer.class
